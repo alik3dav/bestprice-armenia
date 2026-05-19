@@ -12,9 +12,24 @@ export default function LoginPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return setError(error.message);
+
+    const userId = data.user?.id;
+    if (!userId) return setError("Unable to read signed-in user. Please try again.");
+
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
+      .single();
+
+    if (profileError || !profile || profile.role !== "admin") {
+      await supabase.auth.signOut();
+      return setError("Your account does not have admin access.");
+    }
 
     router.replace("/admin");
     router.refresh();
