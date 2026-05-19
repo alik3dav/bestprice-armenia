@@ -1,6 +1,7 @@
 import Link from "next/link";
+import type { Route } from "next";
 
-const items = [
+const items: ReadonlyArray<readonly [string, Route]> = [
   ["Dashboard", "/admin"],
   ["Products", "/admin/products"],
   ["Categories", "/admin/categories"],
