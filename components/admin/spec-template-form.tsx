@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import type { Route } from "next";
 import { SubmitButton } from "@/components/admin/submit-button";
 
 type Category = { id: string; name: string; status: string };
@@ -28,7 +29,7 @@ const emptyField = (): FieldDraft => ({
   optionsText: ""
 });
 
-export function SpecTemplateForm({ categories, action, backHref }: { categories: Category[]; action: (formData: FormData) => void; backHref: string }) {
+export function SpecTemplateForm({ categories, action, backHref }: { categories: Category[]; action: (formData: FormData) => void; backHref: Route }) {
   const [fields, setFields] = useState<FieldDraft[]>([emptyField()]);
   const [clientError, setClientError] = useState<string | null>(null);
 
