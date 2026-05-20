@@ -15,7 +15,7 @@ export default async function Page() {
   const { supabase } = await requireAdmin();
   const { data, error } = await supabase
     .from("profiles")
-    .select("id,full_name,role,created_at,merchants(id,name,slug)")
+    .select("id,full_name,role,created_at,merchants!profile_id(id,name,slug)")
     .order("created_at", { ascending: false });
 
   return (
