@@ -154,16 +154,14 @@ export default async function HomePage() {
                 >
                   <article>
                     <div className="relative aspect-square rounded-xl bg-[#f6f6f6] p-3">
-                      <button
-                        type="button"
-                        aria-label="Add to wishlist"
+                      <span
+                        aria-hidden="true"
                         className="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-slate-500 shadow-sm"
-                        onClick={(event) => event.preventDefault()}
                       >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
                           <path d="M12 20s-6.8-4.35-9.33-8.03C.45 8.76 2.07 4.5 6.08 4.5c2.2 0 3.47 1.2 3.92 2.2.45-1 1.73-2.2 3.92-2.2 4.01 0 5.63 4.26 3.41 7.47C18.8 15.65 12 20 12 20z" />
                         </svg>
-                      </button>
+                      </span>
                       {image ? (
                         <img src={image} alt={product.title} className="h-full w-full object-contain" />
                       ) : (
