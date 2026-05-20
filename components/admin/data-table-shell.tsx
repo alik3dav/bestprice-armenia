@@ -1,6 +1,35 @@
 import { ReactNode } from "react";
 
-export function DataTableShell({ title, children }: { title: string; children?: ReactNode }) {
+type DataTableState = "loading" | "error" | "empty" | "ready";
+
+type DataTableShellProps = {
+  title: string;
+  rows?: ReactNode;
+  state?: DataTableState;
+  errorMessage?: string;
+  total?: number;
+  children?: ReactNode;
+};
+
+export function DataTableShell({
+  title,
+  rows,
+  state = "empty",
+  errorMessage,
+  total,
+  children
+}: DataTableShellProps) {
+  const body =
+    state === "loading" ? (
+      <tr><td className="p-3 text-slate-500" colSpan={3}>Loading records...</td></tr>
+    ) : state === "error" ? (
+      <tr><td className="p-3 text-red-600" colSpan={3}>{errorMessage ?? "Failed to load records."}</td></tr>
+    ) : state === "empty" ? (
+      <tr><td className="p-3 text-slate-500" colSpan={3}>No records yet.</td></tr>
+    ) : rows;
+
+  const totalCount = typeof total === "number" ? total : state === "ready" ? 1 : 0;
+
   return (
     <section className="space-y-3 rounded border bg-white p-4">
       <div className="flex items-center justify-between">
@@ -15,10 +44,10 @@ export function DataTableShell({ title, children }: { title: string; children?: 
           <thead className="bg-slate-50 text-left">
             <tr><th className="p-2">Name</th><th className="p-2">Status</th><th className="p-2">Updated</th></tr>
           </thead>
-          <tbody><tr><td className="p-3 text-slate-500" colSpan={3}>No records yet.</td></tr></tbody>
+          <tbody>{body}</tbody>
         </table>
       </div>
-      <div className="flex justify-between text-xs text-slate-500"><span>Page 1 of 1</span><span>0 total</span></div>
+      <div className="flex justify-between text-xs text-slate-500"><span>Page 1 of 1</span><span>{totalCount} total</span></div>
       {children}
     </section>
   );
