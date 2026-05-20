@@ -14,8 +14,6 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
 
   if (!open) return null;
 
-  const supabase = createClient();
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -23,6 +21,9 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
     setMessage(null);
 
     try {
+      const supabase = createClient();
+      if (!supabase) throw new Error("Authentication is currently unavailable. Please try again later.");
+
       if (mode === "login") {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;

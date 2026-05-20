@@ -24,6 +24,11 @@ export const metadata: Metadata = {
     "Compare products and merchant offers in one place. Find the latest deals, check categories, and pick the best price faster.",
 };
 
+
+function hasSupabaseEnv() {
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+}
+
 function formatSpecValue(value: SpecValueRow) {
   if (value.value_number !== null) return String(value.value_number);
   if (value.value_boolean !== null) return value.value_boolean ? "Yes" : "No";
@@ -40,48 +45,71 @@ function formatSpecValue(value: SpecValueRow) {
 }
 
 export default async function HomePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: { email?: string | null } | null = null;
+  let products: {
+    id: string;
+    title: string;
+    slug: string;
+    description: string | null;
+    images: unknown;
+  }[] = [];
+  let categories: { id: string; name: string; slug: string }[] = [];
+  let offers: OfferRow[] = [];
+  let specValues: SpecValueRow[] = [];
 
-  const [{ data: products }, { data: categories }] = await Promise.all([
-    supabase
-      .from("products")
-      .select("id,title,slug,created_at,description,images")
-      .eq("status", "active")
-      .order("created_at", { ascending: false })
-      .limit(8),
-    supabase.from("categories").select("id,name,slug").eq("status", "active").order("name").limit(8),
-  ]);
+  if (hasSupabaseEnv()) {
+    try {
+      const supabase = await createClient();
+      const authResult = await supabase.auth.getUser();
+      user = authResult.data.user;
 
-  const productIds = (products ?? []).map((product) => product.id);
-
-  const [{ data: offers }, { data: specValues }] = await Promise.all([
-    productIds.length
-      ? supabase
-          .from("product_offers")
-          .select("product_id,price,currency")
+      const [{ data: productsData }, { data: categoriesData }] = await Promise.all([
+        supabase
+          .from("products")
+          .select("id,title,slug,created_at,description,images")
           .eq("status", "active")
-          .in("product_id", productIds)
-      : Promise.resolve({ data: [] }),
-    productIds.length
-      ? supabase
-          .from("product_specification_values")
-          .select("product_id,value_text,value_number,value_boolean,value_select,spec_template_fields(name)")
-          .in("product_id", productIds)
-      : Promise.resolve({ data: [] }),
-  ]);
+          .order("created_at", { ascending: false })
+          .limit(8),
+        supabase.from("categories").select("id,name,slug").eq("status", "active").order("name").limit(8),
+      ]);
+
+      products = productsData ?? [];
+      categories = categoriesData ?? [];
+
+      const productIds = products.map((product) => product.id);
+
+      const [{ data: offersData }, { data: specValuesData }] = await Promise.all([
+        productIds.length
+          ? supabase
+              .from("product_offers")
+              .select("product_id,price,currency")
+              .eq("status", "active")
+              .in("product_id", productIds)
+          : Promise.resolve({ data: [] }),
+        productIds.length
+          ? supabase
+              .from("product_specification_values")
+              .select("product_id,value_text,value_number,value_boolean,value_select,spec_template_fields(name)")
+              .in("product_id", productIds)
+          : Promise.resolve({ data: [] }),
+      ]);
+
+      offers = (offersData ?? []) as OfferRow[];
+      specValues = (specValuesData ?? []) as SpecValueRow[];
+    } catch (error) {
+      console.error("Failed to load homepage data from Supabase", error);
+    }
+  }
 
   const offersByProduct = new Map<string, OfferRow[]>();
-  for (const offer of (offers ?? []) as OfferRow[]) {
+  for (const offer of offers) {
     const existing = offersByProduct.get(offer.product_id) ?? [];
     existing.push(offer);
     offersByProduct.set(offer.product_id, existing);
   }
 
   const specsByProduct = new Map<string, string[]>();
-  for (const spec of (specValues ?? []) as SpecValueRow[]) {
+  for (const spec of specValues) {
     const arr = specsByProduct.get(spec.product_id) ?? [];
     if (arr.length >= 2) continue;
     const fieldName = Array.isArray(spec.spec_template_fields) ? spec.spec_template_fields[0]?.name : spec.spec_template_fields?.name;
