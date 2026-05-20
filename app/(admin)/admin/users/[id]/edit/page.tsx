@@ -3,7 +3,6 @@ import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { requireAdmin } from "@/lib/auth/guards";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 const editUserSchema = z
   .object({
@@ -46,7 +45,7 @@ export default async function EditUserPage({
     "use server";
 
     try {
-      await requireAdmin();
+      const { supabase: admin } = await requireAdmin();
       const parsed = editUserSchema.safeParse(Object.fromEntries(formData.entries()));
       if (!parsed.success) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(parsed.error.issues[0]?.message ?? "Invalid form data")}`);
 
@@ -55,8 +54,6 @@ export default async function EditUserPage({
       if (parsed.data.role === "merchant" && !parsed.data.merchantId) {
         redirect(`/admin/users/${id}/edit?error=${encodeURIComponent("Please select a merchant for merchant role users.")}`);
       }
-
-      const admin = createAdminClient();
 
       const { error: profileError } = await admin
         .from("profiles")
