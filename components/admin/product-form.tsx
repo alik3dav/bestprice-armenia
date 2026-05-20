@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { useEffect, useMemo, useState } from "react";
 import { SubmitButton } from "@/components/admin/submit-button";
+import { createSlug } from "@/lib/slug";
 
 type Category = { id: string; name: string; status: string };
 type Brand = { id: string; name: string };
@@ -25,6 +26,9 @@ export function ProductForm({ action, categories, brands, templatesByCategory, b
   const [values, setValues] = useState<Record<string, string | string[]>>(defaultValues.specValues ?? {});
   const [specError, setSpecError] = useState<string | null>(null);
   const [changed, setChanged] = useState(false);
+  const [title, setTitle] = useState(defaultValues.title);
+  const [slug, setSlug] = useState(defaultValues.slug);
+  const [slugEdited, setSlugEdited] = useState(Boolean(defaultValues.slug));
 
   const template = templatesByCategory[categoryId];
   const fields = useMemo(() => template?.groups.flatMap((g) => g.fields) ?? [], [template]);
@@ -70,8 +74,8 @@ export function ProductForm({ action, categories, brands, templatesByCategory, b
       formData.set("specTemplateId", template?.templateId ?? "");
       action(formData);
     }} className="grid gap-4 md:grid-cols-2">
-      <label className="space-y-1"><span className="text-sm font-medium">Title *</span><input name="title" required defaultValue={defaultValues.title} className="w-full rounded border px-3 py-2 text-sm" /></label>
-      <label className="space-y-1"><span className="text-sm font-medium">Slug *</span><input name="slug" required defaultValue={defaultValues.slug} className="w-full rounded border px-3 py-2 text-sm" /></label>
+      <label className="space-y-1"><span className="text-sm font-medium">Title *</span><input name="title" required value={title} onChange={(e) => { const nextTitle = e.target.value; setTitle(nextTitle); if (!slugEdited) setSlug(createSlug(nextTitle, "-")); }} className="w-full rounded border px-3 py-2 text-sm" /></label>
+      <label className="space-y-1"><span className="text-sm font-medium">Slug *</span><input name="slug" required value={slug} onChange={(e) => { setSlug(e.target.value); setSlugEdited(true); }} onFocus={() => setSlugEdited(true)} className="w-full rounded border px-3 py-2 text-sm" /></label>
       <label className="space-y-1"><span className="text-sm font-medium">Category *</span><select name="categoryId" required className="w-full rounded border px-3 py-2 text-sm" value={categoryId} onChange={(e) => { if (changed && !confirm("Changing category will reload specification fields and may remove unmatched values. Continue?")) return; setCategoryId(e.target.value); setChanged(false); }}><option value="" disabled>Select category</option>{categories.map((category) => (<option key={category.id} value={category.id}>{category.name} ({category.status})</option>))}</select></label>
       <label className="space-y-1"><span className="text-sm font-medium">Brand</span><select name="brandId" className="w-full rounded border px-3 py-2 text-sm" defaultValue={defaultValues.brandId}><option value="">No brand</option>{brands.map((brand) => (<option key={brand.id} value={brand.id}>{brand.name}</option>))}</select></label>
       <label className="space-y-1"><span className="text-sm font-medium">Model</span><input name="model" defaultValue={defaultValues.model} className="w-full rounded border px-3 py-2 text-sm" /></label>
