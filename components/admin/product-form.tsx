@@ -15,6 +15,7 @@ type CategoryTemplate = { templateId: string; templateName: string; groups: Temp
 
 type ProductFormValues = {
   title: string; slug: string; categoryId: string; description: string;
+  shortDescription: string; longDescription: string;
   status: "draft" | "active" | "archived"; images: string; specValues?: Record<string, string | string[]>;
 };
 
@@ -127,6 +128,8 @@ export function ProductForm({ action, categories, templatesByCategory, backHref,
         <p className="text-xs text-slate-500">Upload an image to Supabase Storage and it will be appended here as a public URL.</p>
       </label>
       <label className="space-y-1 md:col-span-2"><span className="text-sm font-medium">Description</span><textarea name="description" defaultValue={defaultValues.description} rows={5} className="w-full rounded border px-3 py-2 text-sm" /></label>
+      <label className="space-y-1 md:col-span-2"><span className="text-sm font-medium">Short description</span><textarea name="shortDescription" defaultValue={defaultValues.shortDescription} rows={2} className="w-full rounded border px-3 py-2 text-sm" /></label>
+      <label className="space-y-1 md:col-span-2"><span className="text-sm font-medium">Long description</span><textarea name="longDescription" defaultValue={defaultValues.longDescription} rows={8} className="w-full rounded border px-3 py-2 text-sm" /></label>
       <div className="flex items-center justify-end gap-2 md:col-span-2"><Link href={backHref} className="rounded border px-3 py-2 text-sm hover:bg-slate-50">Cancel</Link><SubmitButton label={submitLabel} loadingLabel={submitLoadingLabel} disabled={disableSubmit} /></div>
     </form>
   );

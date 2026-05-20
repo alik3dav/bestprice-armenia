@@ -51,6 +51,8 @@ export default async function HomePage() {
     title: string;
     slug: string;
     description: string | null;
+    short_description: string | null;
+    long_description: string | null;
     images: unknown;
   }[] = [];
   let categories: { id: string; name: string; slug: string }[] = [];
@@ -66,7 +68,7 @@ export default async function HomePage() {
       const [{ data: productsData }, { data: categoriesData }] = await Promise.all([
         supabase
           .from("products")
-          .select("id,title,slug,created_at,description,images")
+          .select("id,title,slug,created_at,description,short_description,long_description,images")
           .eq("status", "active")
           .order("created_at", { ascending: false })
           .limit(8),
@@ -143,12 +145,12 @@ export default async function HomePage() {
                 if (!lowest) return current;
                 return current.price < lowest.price ? current : lowest;
               }, null);
-              const summary = specsByProduct.get(product.id)?.join(" • ") || product.description || "Specifications will appear here when available.";
+              const summary = specsByProduct.get(product.id)?.join(" • ") || product.short_description || product.description || "No short description available.";
               const image = Array.isArray(product.images) ? product.images[0] : null;
 
               return (
                 <Link
-                  href={`/#${product.slug}`}
+                  href={`/products/${product.slug}`}
                   key={product.id}
                   className="group block rounded-2xl bg-white p-2 transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
                 >

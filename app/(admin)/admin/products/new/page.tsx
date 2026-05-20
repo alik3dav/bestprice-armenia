@@ -9,6 +9,8 @@ const createProductSchema = z.object({
   slug: z.string().trim().min(2, "Slug must be at least 2 characters.").regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase and use hyphens only."),
   categoryId: z.string().uuid("Please choose a valid category."),
   description: z.string().trim().max(5000, "Description is too long.").optional(),
+  shortDescription: z.string().trim().max(240, "Short description is too long.").optional(),
+  longDescription: z.string().trim().max(20000, "Long description is too long.").optional(),
   status: z.enum(["draft", "active", "archived"]),
   images: z.string().trim().optional()
 });
@@ -54,6 +56,8 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
       slug: formData.get("slug"),
       categoryId: formData.get("categoryId"),
       description: formData.get("description"),
+      shortDescription: formData.get("shortDescription"),
+      longDescription: formData.get("longDescription"),
       status: formData.get("status"),
       images: formData.get("images")
     });
@@ -68,6 +72,8 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
       slug: data.slug,
       category_id: data.categoryId,
       description: data.description || null,
+      short_description: data.shortDescription || null,
+      long_description: data.longDescription || null,
       status: data.status,
       images: parseImages(data.images)
     }).select("id").single();
@@ -109,7 +115,7 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
       {!loadError && categories.length === 0 ? (
         <div className="rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">No categories available. Create a category before adding products.</div>
       ) : (
-        <ProductForm action={createProduct} categories={categories} templatesByCategory={templatesByCategory} backHref="/admin/products" submitLabel="Create product" submitLoadingLabel="Creating..." disableSubmit={categories.length === 0} defaultValues={{ title: "", slug: "", categoryId: "", description: "", status: "draft", images: "" }} />
+        <ProductForm action={createProduct} categories={categories} templatesByCategory={templatesByCategory} backHref="/admin/products" submitLabel="Create product" submitLoadingLabel="Creating..." disableSubmit={categories.length === 0} defaultValues={{ title: "", slug: "", categoryId: "", description: "", shortDescription: "", longDescription: "", status: "draft", images: "" }} />
       )}
     </section>
   );
