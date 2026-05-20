@@ -8,8 +8,6 @@ const createProductSchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters."),
   slug: z.string().trim().min(2, "Slug must be at least 2 characters.").regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase and use hyphens only."),
   categoryId: z.string().uuid("Please choose a valid category."),
-  brandId: z.string().uuid().optional().or(z.literal("")),
-  model: z.string().trim().max(120, "Model must be 120 characters or fewer.").optional(),
   description: z.string().trim().max(5000, "Description is too long.").optional(),
   status: z.enum(["draft", "active", "archived"]),
   images: z.string().trim().optional()
@@ -28,16 +26,14 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
   const { supabase } = await requireAdmin();
   const params = await searchParams;
 
-  const [categoriesResult, brandsResult, templatesResult, templateGroupsResult, fieldsResult] = await Promise.all([
+  const [categoriesResult, templatesResult, templateGroupsResult, fieldsResult] = await Promise.all([
     supabase.from("categories").select("id,name,status").order("name", { ascending: true }),
-    supabase.from("brands").select("id,name").order("name", { ascending: true }),
     supabase.from("specification_groups").select("id,name,category_id"),
     supabase.from("specification_template_groups").select("id,name,template_id,sort_order"),
     supabase.from("specification_fields").select("id,name,key,field_type,required,sort_order,options,template_group_id")
   ]);
 
   const categories = categoriesResult.data ?? [];
-  const brands = brandsResult.data ?? [];
 
   const templatesByCategory = Object.fromEntries((templatesResult.data ?? []).map((t) => {
     const groups = (templateGroupsResult.data ?? []).filter((g) => g.template_id === t.id).sort((a,b)=>a.sort_order-b.sort_order).map((g) => ({
@@ -47,7 +43,7 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
     return [t.category_id, { templateId: t.id, templateName: t.name, groups }];
   }));
 
-  const loadError = categoriesResult.error?.message || brandsResult.error?.message || templatesResult.error?.message || templateGroupsResult.error?.message || fieldsResult.error?.message;
+  const loadError = categoriesResult.error?.message || templatesResult.error?.message || templateGroupsResult.error?.message || fieldsResult.error?.message;
 
   async function createProduct(formData: FormData) {
     "use server";
@@ -57,8 +53,6 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
       title: formData.get("title"),
       slug: formData.get("slug"),
       categoryId: formData.get("categoryId"),
-      brandId: formData.get("brandId"),
-      model: formData.get("model"),
       description: formData.get("description"),
       status: formData.get("status"),
       images: formData.get("images")
@@ -73,8 +67,6 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
       title: data.title,
       slug: data.slug,
       category_id: data.categoryId,
-      brand_id: data.brandId || null,
-      model: data.model || null,
       description: data.description || null,
       status: data.status,
       images: parseImages(data.images)
@@ -117,7 +109,7 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
       {!loadError && categories.length === 0 ? (
         <div className="rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">No categories available. Create a category before adding products.</div>
       ) : (
-        <ProductForm action={createProduct} categories={categories} brands={brands} templatesByCategory={templatesByCategory} backHref="/admin/products" submitLabel="Create product" submitLoadingLabel="Creating..." disableSubmit={categories.length === 0} defaultValues={{ title: "", slug: "", categoryId: "", brandId: "", model: "", description: "", status: "draft", images: "" }} />
+        <ProductForm action={createProduct} categories={categories} templatesByCategory={templatesByCategory} backHref="/admin/products" submitLabel="Create product" submitLoadingLabel="Creating..." disableSubmit={categories.length === 0} defaultValues={{ title: "", slug: "", categoryId: "", description: "", status: "draft", images: "" }} />
       )}
     </section>
   );

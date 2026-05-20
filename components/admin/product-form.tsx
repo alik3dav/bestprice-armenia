@@ -7,19 +7,18 @@ import { SubmitButton } from "@/components/admin/submit-button";
 import { createSlug } from "@/lib/slug";
 
 type Category = { id: string; name: string; status: string };
-type Brand = { id: string; name: string };
 type SpecFieldType = "text" | "number" | "boolean" | "select" | "multi-select";
 type TemplateField = { id: string; name: string; key: string; fieldType: SpecFieldType; required: boolean; sortOrder: number; options: string[] };
 type TemplateGroup = { id: string; name: string; sortOrder: number; fields: TemplateField[] };
 type CategoryTemplate = { templateId: string; templateName: string; groups: TemplateGroup[] };
 
 type ProductFormValues = {
-  title: string; slug: string; categoryId: string; brandId: string; model: string; description: string;
+  title: string; slug: string; categoryId: string; description: string;
   status: "draft" | "active" | "archived"; images: string; specValues?: Record<string, string | string[]>;
 };
 
-export function ProductForm({ action, categories, brands, templatesByCategory, backHref, submitLabel, submitLoadingLabel, defaultValues, disableSubmit }: {
-  action: (formData: FormData) => void; categories: Category[]; brands: Brand[]; templatesByCategory: Record<string, CategoryTemplate>;
+export function ProductForm({ action, categories, templatesByCategory, backHref, submitLabel, submitLoadingLabel, defaultValues, disableSubmit }: {
+  action: (formData: FormData) => void; categories: Category[]; templatesByCategory: Record<string, CategoryTemplate>;
   backHref: Route; submitLabel: string; submitLoadingLabel: string; defaultValues: ProductFormValues; disableSubmit?: boolean;
 }) {
   const [categoryId, setCategoryId] = useState(defaultValues.categoryId);
@@ -77,8 +76,6 @@ export function ProductForm({ action, categories, brands, templatesByCategory, b
       <label className="space-y-1"><span className="text-sm font-medium">Title *</span><input name="title" required value={title} onChange={(e) => { const nextTitle = e.target.value; setTitle(nextTitle); if (!slugEdited) setSlug(createSlug(nextTitle, "-")); }} className="w-full rounded border px-3 py-2 text-sm" /></label>
       <label className="space-y-1"><span className="text-sm font-medium">Slug *</span><input name="slug" required value={slug} onChange={(e) => { setSlug(e.target.value); setSlugEdited(true); }} onFocus={() => setSlugEdited(true)} className="w-full rounded border px-3 py-2 text-sm" /></label>
       <label className="space-y-1"><span className="text-sm font-medium">Category *</span><select name="categoryId" required className="w-full rounded border px-3 py-2 text-sm" value={categoryId} onChange={(e) => { if (changed && !confirm("Changing category will reload specification fields and may remove unmatched values. Continue?")) return; setCategoryId(e.target.value); setChanged(false); }}><option value="" disabled>Select category</option>{categories.map((category) => (<option key={category.id} value={category.id}>{category.name} ({category.status})</option>))}</select></label>
-      <label className="space-y-1"><span className="text-sm font-medium">Brand</span><select name="brandId" className="w-full rounded border px-3 py-2 text-sm" defaultValue={defaultValues.brandId}><option value="">No brand</option>{brands.map((brand) => (<option key={brand.id} value={brand.id}>{brand.name}</option>))}</select></label>
-      <label className="space-y-1"><span className="text-sm font-medium">Model</span><input name="model" defaultValue={defaultValues.model} className="w-full rounded border px-3 py-2 text-sm" /></label>
       <label className="space-y-1"><span className="text-sm font-medium">Status *</span><select name="status" required className="w-full rounded border px-3 py-2 text-sm" defaultValue={defaultValues.status}><option value="draft">Draft</option><option value="active">Active</option><option value="archived">Archived</option></select></label>
 
       <div className="md:col-span-2 rounded border border-slate-200">
