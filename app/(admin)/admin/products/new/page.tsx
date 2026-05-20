@@ -28,14 +28,26 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
   const { supabase } = await requireAdmin();
   const params = await searchParams;
 
-  const [categoriesResult, brandsResult] = await Promise.all([
+  const [categoriesResult, brandsResult, templatesResult, templateGroupsResult, fieldsResult] = await Promise.all([
     supabase.from("categories").select("id,name,status").order("name", { ascending: true }),
-    supabase.from("brands").select("id,name").order("name", { ascending: true })
+    supabase.from("brands").select("id,name").order("name", { ascending: true }),
+    supabase.from("specification_groups").select("id,name,category_id"),
+    supabase.from("specification_template_groups").select("id,name,template_id,sort_order"),
+    supabase.from("specification_fields").select("id,name,key,field_type,required,sort_order,options,template_group_id")
   ]);
 
   const categories = categoriesResult.data ?? [];
   const brands = brandsResult.data ?? [];
-  const loadError = categoriesResult.error?.message || brandsResult.error?.message;
+
+  const templatesByCategory = Object.fromEntries((templatesResult.data ?? []).map((t) => {
+    const groups = (templateGroupsResult.data ?? []).filter((g) => g.template_id === t.id).sort((a,b)=>a.sort_order-b.sort_order).map((g) => ({
+      id: g.id, name: g.name, sortOrder: g.sort_order,
+      fields: (fieldsResult.data ?? []).filter((f) => f.template_group_id === g.id).sort((a,b)=>a.sort_order-b.sort_order).map((f) => ({ id: f.id, name: f.name, key: f.key, fieldType: f.field_type, required: f.required, sortOrder: f.sort_order, options: Array.isArray(f.options) ? f.options : [] }))
+    }));
+    return [t.category_id, { templateId: t.id, templateName: t.name, groups }];
+  }));
+
+  const loadError = categoriesResult.error?.message || brandsResult.error?.message || templatesResult.error?.message || templateGroupsResult.error?.message || fieldsResult.error?.message;
 
   async function createProduct(formData: FormData) {
     "use server";
@@ -57,7 +69,7 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
     }
 
     const data = parsed.data;
-    const { error } = await actionClient.from("products").insert({
+    const { data: created, error } = await actionClient.from("products").insert({
       title: data.title,
       slug: data.slug,
       category_id: data.categoryId,
@@ -66,10 +78,24 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
       description: data.description || null,
       status: data.status,
       images: parseImages(data.images)
-    });
+    }).select("id").single();
 
-    if (error) {
-      redirect(`/admin/products/new?error=${encodeURIComponent(error.message)}`);
+    if (error || !created) {
+      redirect(`/admin/products/new?error=${encodeURIComponent(error?.message ?? "Failed to create product")}`);
+    }
+
+    const specValuesRaw = String(formData.get("specValues") ?? "{}");
+    const parsedValues = JSON.parse(specValuesRaw) as Record<string, string | string[]>;
+    const selectedTemplate = templatesByCategory[data.categoryId];
+    if (selectedTemplate) {
+      const fieldRows = selectedTemplate.groups.flatMap((g: { fields: Array<{ key: string; id: string; fieldType: string }> }) => g.fields);
+      const payload = fieldRows.flatMap((f: { key: string; id: string; fieldType: string }) => {
+        const v = parsedValues[f.key];
+        const empty = Array.isArray(v) ? v.length === 0 : !String(v ?? "").trim();
+        if (empty) return [];
+        return [{ product_id: created.id, field_id: f.id, value_text: f.fieldType === "text" || f.fieldType === "multi-select" ? (Array.isArray(v) ? JSON.stringify(v) : String(v)) : null, value_number: f.fieldType === "number" ? Number(v) : null, value_boolean: f.fieldType === "boolean" ? String(v) === "true" : null, value_select: f.fieldType === "select" ? String(v) : null }];
+      });
+      if (payload.length > 0) await actionClient.from("product_specification_values").insert(payload);
     }
 
     redirect("/admin/products");
@@ -91,7 +117,7 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
       {!loadError && categories.length === 0 ? (
         <div className="rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">No categories available. Create a category before adding products.</div>
       ) : (
-        <ProductForm action={createProduct} categories={categories} brands={brands} backHref="/admin/products" submitLabel="Create product" submitLoadingLabel="Creating..." disableSubmit={categories.length === 0} defaultValues={{ title: "", slug: "", categoryId: "", brandId: "", model: "", description: "", status: "draft", images: "" }} />
+        <ProductForm action={createProduct} categories={categories} brands={brands} templatesByCategory={templatesByCategory} backHref="/admin/products" submitLabel="Create product" submitLoadingLabel="Creating..." disableSubmit={categories.length === 0} defaultValues={{ title: "", slug: "", categoryId: "", brandId: "", model: "", description: "", status: "draft", images: "" }} />
       )}
     </section>
   );
