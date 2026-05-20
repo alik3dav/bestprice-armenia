@@ -9,6 +9,8 @@ const productSchema = z.object({
   slug: z.string().trim().min(2).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   categoryId: z.string().uuid(),
   description: z.string().trim().max(5000).optional(),
+  shortDescription: z.string().trim().max(240).optional(),
+  longDescription: z.string().trim().max(20000).optional(),
   status: z.enum(["draft", "active", "archived"]),
   images: z.string().trim().optional()
 });
@@ -19,7 +21,7 @@ export default async function ProductEditPage({ params, searchParams }: { params
   const query = await searchParams;
   const { supabase } = await requireAdmin();
   const [productResult, categoriesResult, templatesResult, templateGroupsResult, fieldsResult, valuesResult] = await Promise.all([
-    supabase.from("products").select("id,title,slug,category_id,description,status,images").eq("id", id).single(),
+    supabase.from("products").select("id,title,slug,category_id,description,short_description,long_description,status,images").eq("id", id).single(),
     supabase.from("categories").select("id,name,status").order("name", { ascending: true }),
     supabase.from("specification_groups").select("id,name,category_id"),
     supabase.from("specification_template_groups").select("id,name,template_id,sort_order"),
@@ -52,7 +54,7 @@ export default async function ProductEditPage({ params, searchParams }: { params
     const parsed = productSchema.safeParse(Object.fromEntries(formData));
     if (!parsed.success) redirect(`/admin/products/${id}/edit?error=${encodeURIComponent(parsed.error.issues[0]?.message ?? "Invalid form")}`);
     const d = parsed.data;
-    const { error } = await c.from("products").update({ title: d.title, slug: d.slug, category_id: d.categoryId, description: d.description || null, status: d.status, images: parseImages(d.images) }).eq("id", id);
+    const { error } = await c.from("products").update({ title: d.title, slug: d.slug, category_id: d.categoryId, description: d.description || null, short_description: d.shortDescription || null, long_description: d.longDescription || null, status: d.status, images: parseImages(d.images) }).eq("id", id);
     if (error) redirect(`/admin/products/${id}/edit?error=${encodeURIComponent(error.message)}`);
 
     await c.from("product_specification_values").delete().eq("product_id", id);
@@ -74,5 +76,5 @@ export default async function ProductEditPage({ params, searchParams }: { params
   }
 
   const p = productResult.data;
-  return <section className="space-y-4 rounded border bg-white p-4"><div className="flex items-center justify-between gap-3"><div><h1 className="text-xl font-semibold">Edit Product</h1><p className="text-sm text-slate-500">Update product details in the catalog.</p></div><Link href="/admin/products" className="rounded border px-3 py-2 text-sm hover:bg-slate-50">Back to products</Link></div>{(query?.error || categoriesResult.error || fieldsResult.error || templateGroupsResult.error || templatesResult.error || valuesResult.error) ? <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{query?.error ?? categoriesResult.error?.message ?? fieldsResult.error?.message ?? templateGroupsResult.error?.message ?? templatesResult.error?.message ?? valuesResult.error?.message}</div> : null}<ProductForm action={updateProduct} categories={categoriesResult.data ?? []} templatesByCategory={templatesByCategory} backHref="/admin/products" submitLabel="Save product" submitLoadingLabel="Saving..." defaultValues={{ title: p.title, slug: p.slug, categoryId: p.category_id, description: p.description ?? "", status: p.status, images: Array.isArray(p.images) ? p.images.join("\n") : "", specValues }} /></section>;
+  return <section className="space-y-4 rounded border bg-white p-4"><div className="flex items-center justify-between gap-3"><div><h1 className="text-xl font-semibold">Edit Product</h1><p className="text-sm text-slate-500">Update product details in the catalog.</p></div><Link href="/admin/products" className="rounded border px-3 py-2 text-sm hover:bg-slate-50">Back to products</Link></div>{(query?.error || categoriesResult.error || fieldsResult.error || templateGroupsResult.error || templatesResult.error || valuesResult.error) ? <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{query?.error ?? categoriesResult.error?.message ?? fieldsResult.error?.message ?? templateGroupsResult.error?.message ?? templatesResult.error?.message ?? valuesResult.error?.message}</div> : null}<ProductForm action={updateProduct} categories={categoriesResult.data ?? []} templatesByCategory={templatesByCategory} backHref="/admin/products" submitLabel="Save product" submitLoadingLabel="Saving..." defaultValues={{ title: p.title, slug: p.slug, categoryId: p.category_id, description: p.description ?? "", shortDescription: p.short_description ?? "", longDescription: p.long_description ?? "", status: p.status, images: Array.isArray(p.images) ? p.images.join("\n") : "", specValues }} /></section>;
 }
