@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { DataTableShell } from "@/components/admin/data-table-shell";
 import { TableRowActions } from "@/components/admin/table-row-actions";
 import { requireAdmin } from "@/lib/auth/guards";
@@ -21,7 +20,6 @@ export default async function Page() {
 
   return (
     <div className="space-y-3">
-      <div className="flex justify-end"><Link href="/admin/users/new" className="rounded bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800">Create user</Link></div>
       <DataTableShell title="Users Management" headers={<tr><th className="p-2">User</th><th className="p-2">Role</th><th className="p-2">Merchant</th><th className="p-2">Created</th><th className="p-2 text-right">Actions</th></tr>} columnCount={5} state={error ? "error" : (data?.length ?? 0) > 0 ? "ready" : "empty"} errorMessage={error?.message} total={data?.length ?? 0} rows={data?.map((u) => <tr key={u.id}><td className="p-2"><div className="font-medium">{u.full_name ?? "—"}</div><div className="text-xs text-slate-500">{u.id}</div></td><td className="p-2 capitalize">{u.role}</td><td className="p-2">{Array.isArray(u.merchants) && u.merchants[0]?.name ? `${u.merchants[0].name} (${u.merchants[0].slug})` : "—"}</td><td className="p-2">{new Date(u.created_at).toLocaleString()}</td><td className="p-2"><TableRowActions itemLabel="user" itemName={u.full_name ?? u.id} editHref={`/admin/users/${u.id}/edit`} detailsHref={`/admin/users/${u.id}`} onDelete={deleteUser.bind(null, u.id)} /></td></tr>)} />
     </div>
   );
