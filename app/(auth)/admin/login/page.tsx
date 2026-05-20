@@ -40,7 +40,7 @@ export default function AdminLoginPage() {
       <h1 className="mb-4 text-xl font-semibold">Admin Login</h1>
       <form className="space-y-3" onSubmit={onSubmit}>
         <input className="w-full rounded border p-2" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input className="w-full rounded border p-2" placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input className="w-full rounded border p-2" placeholder="Κωδικός" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button className="w-full rounded bg-slate-900 p-2 text-white">Sign in</button>
       </form>
