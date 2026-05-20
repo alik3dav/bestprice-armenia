@@ -4,7 +4,7 @@ import { DashboardLayoutShell } from "@/components/admin/dashboard-layout-shell"
 import { DashboardSidebar } from "@/components/admin/sidebar";
 import { DashboardTopbar } from "@/components/admin/topbar";
 
-const merchantItems = [["Dashboard", "/merchant/dashboard"]] as const;
+const merchantItems = [["Dashboard", "/merchant/dashboard"],["Offers", "/merchant/offers"]] as const;
 
 export default async function MerchantLayout({ children }: { children: ReactNode }) {
   await requireMerchant();
