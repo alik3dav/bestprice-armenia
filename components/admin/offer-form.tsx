@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { FormHTMLAttributes } from "react";
 import Link from "next/link";
+import type { Route } from "next";
 import { SubmitButton } from "@/components/admin/submit-button";
 
 type ProductOption = { id: string; title: string };
@@ -22,7 +23,7 @@ type OfferFormProps = {
   action: FormHTMLAttributes<HTMLFormElement>["action"];
   products: ProductOption[];
   defaultValues: OfferFormValues;
-  backHref: string;
+  backHref: Route;
   submitLabel: string;
   submitLoadingLabel: string;
   disableSubmit?: boolean;
