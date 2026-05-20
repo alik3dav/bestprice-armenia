@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -28,11 +29,11 @@ export function TableRowActions({ itemLabel, itemName, editHref, detailsHref, on
   return (
     <div className="flex items-center justify-end gap-1">
       {detailsHref ? (
-        <Link href={detailsHref} aria-label={detailsLabel} title={detailsLabel} className="rounded p-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+        <Link href={detailsHref as Route} aria-label={detailsLabel} title={detailsLabel} className="rounded p-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900">
           <Eye className="h-4 w-4" aria-hidden="true" />
         </Link>
       ) : null}
-      <Link href={editHref} aria-label={editLabel} title={editLabel} className="rounded p-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+      <Link href={editHref as Route} aria-label={editLabel} title={editLabel} className="rounded p-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900">
         <Pencil className="h-4 w-4" aria-hidden="true" />
       </Link>
 
