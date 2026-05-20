@@ -28,31 +28,55 @@ export default async function NewUserPage({ searchParams }: { searchParams?: Pro
     if (parsed.data.role === "merchant" && !parsed.data.merchantId) redirect(`/admin/users/new?error=${encodeURIComponent("Please select a merchant for merchant role users.")}`);
 
     const admin = createAdminClient();
-    const { data: authUser, error: authError } = await admin.auth.admin.createUser({ email: parsed.data.email, password: parsed.data.password, email_confirm: true, user_metadata: { full_name: parsed.data.fullName, role: parsed.data.role } });
-    if (authError || !authUser.user) {
-      const message = authError?.message?.toLowerCase().includes("already")
-        ? "A user with this email already exists."
-        : authError?.message ?? "Failed to create auth user";
-      redirect(`/admin/users/new?error=${encodeURIComponent(message)}`);
-    }
-
-    const uid = authUser.user.id;
-    const { error: profileError } = await admin.from("profiles").upsert({ id: uid, role: parsed.data.role, full_name: parsed.data.fullName });
-    if (profileError) {
-      await admin.auth.admin.deleteUser(uid);
-      redirect(`/admin/users/new?error=${encodeURIComponent(profileError.message)}`);
-    }
 
     if (parsed.data.role === "merchant" && parsed.data.merchantId) {
-      const { error: linkError } = await admin.from("merchants").update({ profile_id: uid }).eq("id", parsed.data.merchantId);
-      if (linkError) {
-        await admin.from("profiles").delete().eq("id", uid);
-        await admin.auth.admin.deleteUser(uid);
-        redirect(`/admin/users/new?error=${encodeURIComponent(linkError.message)}`);
-      }
+      const { data: existingMerchantLink, error: existingMerchantLinkError } = await admin
+        .from("merchants")
+        .select("id,profile_id")
+        .eq("id", parsed.data.merchantId)
+        .single();
+
+      if (existingMerchantLinkError) redirect(`/admin/users/new?error=${encodeURIComponent(existingMerchantLinkError.message)}`);
+      if (existingMerchantLink?.profile_id) redirect(`/admin/users/new?error=${encodeURIComponent("This merchant already has a linked user account.")}`);
     }
 
-    redirect("/admin/users");
+    let uid: string | null = null;
+
+    try {
+      const { data: authUser, error: authError } = await admin.auth.admin.createUser({ email: parsed.data.email, password: parsed.data.password, email_confirm: true, user_metadata: { full_name: parsed.data.fullName, role: parsed.data.role } });
+      if (authError || !authUser.user) {
+        const message = authError?.message?.toLowerCase().includes("already")
+          ? "A user with this email already exists."
+          : authError?.message ?? "Failed to create auth user";
+        redirect(`/admin/users/new?error=${encodeURIComponent(message)}`);
+      }
+
+      uid = authUser.user.id;
+      const { error: profileError } = await admin.from("profiles").upsert({ id: uid, role: parsed.data.role, full_name: parsed.data.fullName });
+      if (profileError) {
+        await admin.auth.admin.deleteUser(uid);
+        redirect(`/admin/users/new?error=${encodeURIComponent(profileError.message)}`);
+      }
+
+      if (parsed.data.role === "merchant" && parsed.data.merchantId) {
+        const { error: linkError } = await admin.from("merchants").update({ profile_id: uid }).eq("id", parsed.data.merchantId);
+        if (linkError) {
+          await admin.from("profiles").delete().eq("id", uid);
+          await admin.auth.admin.deleteUser(uid);
+          redirect(`/admin/users/new?error=${encodeURIComponent(linkError.message)}`);
+        }
+      }
+
+      redirect("/admin/users");
+    } catch (error) {
+      if (uid) {
+        await admin.from("profiles").delete().eq("id", uid);
+        await admin.auth.admin.deleteUser(uid);
+      }
+
+      const message = error instanceof Error ? error.message : "Unexpected error while creating user.";
+      redirect(`/admin/users/new?error=${encodeURIComponent(message)}`);
+    }
   }
 
   return <section className="space-y-4 rounded border bg-white p-4"><div className="flex items-center justify-between gap-3"><div><h1 className="text-xl font-semibold">Create User</h1><p className="text-sm text-slate-500">Create an auth user and profile, then optionally link to a merchant.</p></div><Link href="/admin/users" className="rounded border px-3 py-2 text-sm hover:bg-slate-50">Back to users</Link></div>{params?.error ? <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{params.error}</div> : null}<UserForm action={createUser} merchants={merchants ?? []} backHref="/admin/users" /></section>;
