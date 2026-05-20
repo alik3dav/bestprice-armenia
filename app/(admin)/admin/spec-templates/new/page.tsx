@@ -112,7 +112,7 @@ export default async function NewSpecTemplatePage({ searchParams }: { searchPara
       {!categoriesResult.error && categories.length === 0 ? (
         <div className="rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">No categories available. Create a category before adding a spec template.</div>
       ) : (
-        <SpecTemplateForm categories={categories} action={createSpecTemplate} backHref="/admin/spec-templates" />
+        <SpecTemplateForm categories={categories} action={createSpecTemplate} backHref="/admin/spec-templates" submitLabel="Create spec template" submitLoadingLabel="Creating..." defaultValues={{ name: "", categoryId: "", fields: [] }} />
       )}
     </section>
   );

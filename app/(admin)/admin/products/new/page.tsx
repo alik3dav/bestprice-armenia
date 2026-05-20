@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/guards";
-import { SubmitButton } from "@/components/admin/submit-button";
+import { ProductForm } from "@/components/admin/product-form";
 
 const createProductSchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters."),
@@ -91,17 +91,7 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
       {!loadError && categories.length === 0 ? (
         <div className="rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">No categories available. Create a category before adding products.</div>
       ) : (
-        <form action={createProduct} className="grid gap-4 md:grid-cols-2">
-          <label className="space-y-1"><span className="text-sm font-medium">Title *</span><input name="title" required className="w-full rounded border px-3 py-2 text-sm" placeholder="iPhone 16 Pro" /></label>
-          <label className="space-y-1"><span className="text-sm font-medium">Slug *</span><input name="slug" required className="w-full rounded border px-3 py-2 text-sm" placeholder="iphone-16-pro" /></label>
-          <label className="space-y-1"><span className="text-sm font-medium">Category *</span><select name="categoryId" required className="w-full rounded border px-3 py-2 text-sm" defaultValue=""><option value="" disabled>Select category</option>{categories.map((category) => (<option key={category.id} value={category.id}>{category.name} ({category.status})</option>))}</select></label>
-          <label className="space-y-1"><span className="text-sm font-medium">Brand</span><select name="brandId" className="w-full rounded border px-3 py-2 text-sm" defaultValue=""><option value="">No brand</option>{brands.map((brand) => (<option key={brand.id} value={brand.id}>{brand.name}</option>))}</select></label>
-          <label className="space-y-1"><span className="text-sm font-medium">Model</span><input name="model" className="w-full rounded border px-3 py-2 text-sm" placeholder="A3102" /></label>
-          <label className="space-y-1"><span className="text-sm font-medium">Status *</span><select name="status" required className="w-full rounded border px-3 py-2 text-sm" defaultValue="draft"><option value="draft">Draft</option><option value="active">Active</option><option value="archived">Archived</option></select></label>
-          <label className="space-y-1 md:col-span-2"><span className="text-sm font-medium">Images</span><textarea name="images" rows={3} className="w-full rounded border px-3 py-2 text-sm" placeholder="Paste image URLs, one per line or comma-separated" /></label>
-          <label className="space-y-1 md:col-span-2"><span className="text-sm font-medium">Description</span><textarea name="description" rows={5} className="w-full rounded border px-3 py-2 text-sm" /></label>
-          <div className="flex items-center justify-end gap-2 md:col-span-2"><Link href="/admin/products" className="rounded border px-3 py-2 text-sm hover:bg-slate-50">Cancel</Link><SubmitButton label="Create product" loadingLabel="Creating..." disabled={categories.length === 0} /></div>
-        </form>
+        <ProductForm action={createProduct} categories={categories} brands={brands} backHref="/admin/products" submitLabel="Create product" submitLoadingLabel="Creating..." disableSubmit={categories.length === 0} defaultValues={{ title: "", slug: "", categoryId: "", brandId: "", model: "", description: "", status: "draft", images: "" }} />
       )}
     </section>
   );

@@ -9,7 +9,7 @@ type Category = { id: string; name: string; status: string };
 
 type FieldType = "text" | "number" | "boolean" | "select" | "multi-select";
 
-type FieldDraft = {
+export type SpecTemplateFieldDraft = {
   id: string;
   name: string;
   key: string;
@@ -19,7 +19,7 @@ type FieldDraft = {
   optionsText: string;
 };
 
-const emptyField = (): FieldDraft => ({
+const emptyField = (): SpecTemplateFieldDraft => ({
   id: crypto.randomUUID(),
   name: "",
   key: "",
@@ -29,8 +29,8 @@ const emptyField = (): FieldDraft => ({
   optionsText: ""
 });
 
-export function SpecTemplateForm({ categories, action, backHref }: { categories: Category[]; action: (formData: FormData) => void; backHref: Route }) {
-  const [fields, setFields] = useState<FieldDraft[]>([emptyField()]);
+export function SpecTemplateForm({ categories, action, backHref, submitLabel, submitLoadingLabel, defaultValues }: { categories: Category[]; action: (formData: FormData) => void; backHref: Route; submitLabel: string; submitLoadingLabel: string; defaultValues?: { name: string; categoryId: string; fields: SpecTemplateFieldDraft[] } }) {
+  const [fields, setFields] = useState<SpecTemplateFieldDraft[]>(defaultValues?.fields?.length ? defaultValues.fields : [emptyField()]);
   const [clientError, setClientError] = useState<string | null>(null);
 
   const fieldsPayload = useMemo(
@@ -51,7 +51,7 @@ export function SpecTemplateForm({ categories, action, backHref }: { categories:
     [fields]
   );
 
-  const updateField = <K extends keyof FieldDraft>(id: string, key: K, value: FieldDraft[K]) => {
+  const updateField = <K extends keyof SpecTemplateFieldDraft>(id: string, key: K, value: SpecTemplateFieldDraft[K]) => {
     setFields((current) => current.map((field) => (field.id === id ? { ...field, [key]: value } : field)));
   };
 
@@ -84,11 +84,11 @@ export function SpecTemplateForm({ categories, action, backHref }: { categories:
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-1">
           <span className="text-sm font-medium">Template Name *</span>
-          <input name="name" required className="w-full rounded border px-3 py-2 text-sm" placeholder="Phone Specs" />
+          <input name="name" required defaultValue={defaultValues?.name ?? ""} className="w-full rounded border px-3 py-2 text-sm" placeholder="Phone Specs" />
         </label>
         <label className="space-y-1">
           <span className="text-sm font-medium">Category *</span>
-          <select name="categoryId" required className="w-full rounded border px-3 py-2 text-sm" defaultValue="">
+          <select name="categoryId" required className="w-full rounded border px-3 py-2 text-sm" defaultValue={defaultValues?.categoryId ?? ""}>
             <option value="" disabled>Select category</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>{category.name} ({category.status})</option>
@@ -131,7 +131,7 @@ export function SpecTemplateForm({ categories, action, backHref }: { categories:
 
       <div className="flex items-center justify-end gap-2">
         <Link href={backHref} className="rounded border px-3 py-2 text-sm hover:bg-slate-50">Cancel</Link>
-        <SubmitButton label="Create spec template" loadingLabel="Creating..." disabled={categories.length === 0} />
+        <SubmitButton label={submitLabel} loadingLabel={submitLoadingLabel} disabled={categories.length === 0} />
       </div>
     </form>
   );
