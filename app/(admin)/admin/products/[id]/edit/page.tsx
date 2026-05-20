@@ -41,9 +41,9 @@ export default async function ProductEditPage({ params, searchParams }: { params
     const field = fieldById.get(v.field_id);
     if (!field) return [];
     if (field.field_type === "multi-select") {
-      try { return [[field.key, JSON.parse(v.value_text ?? "[]")]]; } catch { return [[field.key, []]]; }
+      try { return [[field.id, JSON.parse(v.value_text ?? "[]")]]; } catch { return [[field.key, []]]; }
     }
-    return [[field.key, v.value_select ?? v.value_text ?? (v.value_number?.toString()) ?? (v.value_boolean === null ? "" : String(v.value_boolean)) ?? ""]];
+    return [[field.id, v.value_select ?? v.value_text ?? (v.value_number?.toString()) ?? (v.value_boolean === null ? "" : String(v.value_boolean)) ?? ""]];
   }));
 
   async function updateProduct(formData: FormData) {
@@ -62,7 +62,7 @@ export default async function ProductEditPage({ params, searchParams }: { params
     if (selectedTemplate) {
       const fieldRows = selectedTemplate.groups.flatMap((g: { fields: Array<{ key: string; id: string; fieldType: string }> }) => g.fields);
       const payload = fieldRows.flatMap((f: { key: string; id: string; fieldType: string }) => {
-        const v = parsedValues[f.key];
+        const v = parsedValues[f.id];
         const empty = Array.isArray(v) ? v.length === 0 : !String(v ?? "").trim();
         if (empty) return [];
         return [{ product_id: id, field_id: f.id, value_text: f.fieldType === "text" || f.fieldType === "multi-select" ? (Array.isArray(v) ? JSON.stringify(v) : String(v)) : null, value_number: f.fieldType === "number" ? Number(v) : null, value_boolean: f.fieldType === "boolean" ? String(v) === "true" : null, value_select: f.fieldType === "select" ? String(v) : null }];

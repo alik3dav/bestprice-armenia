@@ -37,26 +37,26 @@ export function ProductForm({ action, categories, templatesByCategory, backHref,
     setValues((prev) => {
       const next: Record<string, string | string[]> = {};
       for (const f of fields) {
-        const old = prev[f.key] ?? defaultValues.specValues?.[f.key];
-        if (old !== undefined) next[f.key] = old;
+        const old = prev[f.id] ?? defaultValues.specValues?.[f.id];
+        if (old !== undefined) next[f.id] = old;
       }
       return next;
     });
   }, [categoryId]);
 
   const renderInput = (field: TemplateField) => {
-    const value = values[field.key];
+    const value = values[field.id];
     if (field.fieldType === "boolean") {
-      return <select value={(value as string) ?? ""} onChange={(e) => { setChanged(true); setValues((p) => ({ ...p, [field.key]: e.target.value })); }} className="w-full rounded border px-2 py-1 text-xs"><option value="">—</option><option value="true">True</option><option value="false">False</option></select>;
+      return <select value={(value as string) ?? ""} onChange={(e) => { setChanged(true); setValues((p) => ({ ...p, [field.id]: e.target.value })); }} className="w-full rounded border px-2 py-1 text-xs"><option value="">—</option><option value="true">True</option><option value="false">False</option></select>;
     }
     if (field.fieldType === "select") {
-      return <select value={(value as string) ?? ""} onChange={(e) => { setChanged(true); setValues((p) => ({ ...p, [field.key]: e.target.value })); }} className="w-full rounded border px-2 py-1 text-xs"><option value="">Select</option>{field.options.map((o) => <option key={o} value={o}>{o}</option>)}</select>;
+      return <select value={(value as string) ?? ""} onChange={(e) => { setChanged(true); setValues((p) => ({ ...p, [field.id]: e.target.value })); }} className="w-full rounded border px-2 py-1 text-xs"><option value="">Select</option>{field.options.map((o) => <option key={o} value={o}>{o}</option>)}</select>;
     }
     if (field.fieldType === "multi-select") {
       const selected = Array.isArray(value) ? value : [];
-      return <select multiple value={selected} onChange={(e) => { setChanged(true); setValues((p) => ({ ...p, [field.key]: Array.from(e.target.selectedOptions).map((o) => o.value) })); }} className="w-full rounded border px-2 py-1 text-xs min-h-20">{field.options.map((o) => <option key={o} value={o}>{o}</option>)}</select>;
+      return <select multiple value={selected} onChange={(e) => { setChanged(true); setValues((p) => ({ ...p, [field.id]: Array.from(e.target.selectedOptions).map((o) => o.value) })); }} className="w-full rounded border px-2 py-1 text-xs min-h-20">{field.options.map((o) => <option key={o} value={o}>{o}</option>)}</select>;
     }
-    return <input type={field.fieldType === "number" ? "number" : "text"} value={(value as string) ?? ""} onChange={(e) => { setChanged(true); setValues((p) => ({ ...p, [field.key]: e.target.value })); }} className="w-full rounded border px-2 py-1 text-xs" />;
+    return <input type={field.fieldType === "number" ? "number" : "text"} value={(value as string) ?? ""} onChange={(e) => { setChanged(true); setValues((p) => ({ ...p, [field.id]: e.target.value })); }} className="w-full rounded border px-2 py-1 text-xs" />;
   };
 
   return (
@@ -64,7 +64,7 @@ export function ProductForm({ action, categories, templatesByCategory, backHref,
       setSpecError(null);
       if (template) {
         for (const f of fields) {
-          const v = values[f.key];
+          const v = values[f.id];
           const empty = Array.isArray(v) ? v.length === 0 : !String(v ?? "").trim();
           if (f.required && empty) { setSpecError(`${f.name} is required.`); return; }
         }

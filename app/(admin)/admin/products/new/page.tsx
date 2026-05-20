@@ -82,7 +82,7 @@ export default async function NewProductPage({ searchParams }: { searchParams?: 
     if (selectedTemplate) {
       const fieldRows = selectedTemplate.groups.flatMap((g: { fields: Array<{ key: string; id: string; fieldType: string }> }) => g.fields);
       const payload = fieldRows.flatMap((f: { key: string; id: string; fieldType: string }) => {
-        const v = parsedValues[f.key];
+        const v = parsedValues[f.id];
         const empty = Array.isArray(v) ? v.length === 0 : !String(v ?? "").trim();
         if (empty) return [];
         return [{ product_id: created.id, field_id: f.id, value_text: f.fieldType === "text" || f.fieldType === "multi-select" ? (Array.isArray(v) ? JSON.stringify(v) : String(v)) : null, value_number: f.fieldType === "number" ? Number(v) : null, value_boolean: f.fieldType === "boolean" ? String(v) === "true" : null, value_select: f.fieldType === "select" ? String(v) : null }];
