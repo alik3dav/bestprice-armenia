@@ -3,11 +3,41 @@ import Link from "next/link";
 import { PublicHeader } from "@/components/public/public-header";
 import { createClient } from "@/lib/supabase/server";
 
+type OfferRow = {
+  product_id: string;
+  price: number;
+  currency: string;
+};
+
+type SpecValueRow = {
+  product_id: string;
+  value_text: string | null;
+  value_number: number | null;
+  value_boolean: boolean | null;
+  value_select: string | null;
+  spec_template_fields: { name: string } | { name: string }[] | null;
+};
+
 export const metadata: Metadata = {
   title: "BestPrice Armenia | Compare Products & Merchant Offers",
   description:
     "Compare products and merchant offers in one place. Find the latest deals, check categories, and pick the best price faster.",
 };
+
+function formatSpecValue(value: SpecValueRow) {
+  if (value.value_number !== null) return String(value.value_number);
+  if (value.value_boolean !== null) return value.value_boolean ? "Yes" : "No";
+  if (value.value_select) return value.value_select;
+  if (!value.value_text) return null;
+  const trimmed = value.value_text.trim();
+  if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) return parsed.join(", ");
+    } catch {}
+  }
+  return trimmed;
+}
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -15,16 +45,51 @@ export default async function HomePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: products }, { data: offers }, { data: categories }] = await Promise.all([
-    supabase.from("products").select("id,title,slug,created_at").eq("status", "active").order("created_at", { ascending: false }).limit(6),
+  const [{ data: products }, { data: categories }] = await Promise.all([
     supabase
-      .from("product_offers")
-      .select("id,price,currency,stock_status,products!inner(title,slug)")
+      .from("products")
+      .select("id,title,slug,created_at,description,images")
       .eq("status", "active")
       .order("created_at", { ascending: false })
-      .limit(6),
+      .limit(8),
     supabase.from("categories").select("id,name,slug").eq("status", "active").order("name").limit(8),
   ]);
+
+  const productIds = (products ?? []).map((product) => product.id);
+
+  const [{ data: offers }, { data: specValues }] = await Promise.all([
+    productIds.length
+      ? supabase
+          .from("product_offers")
+          .select("product_id,price,currency")
+          .eq("status", "active")
+          .in("product_id", productIds)
+      : Promise.resolve({ data: [] }),
+    productIds.length
+      ? supabase
+          .from("product_specification_values")
+          .select("product_id,value_text,value_number,value_boolean,value_select,spec_template_fields(name)")
+          .in("product_id", productIds)
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  const offersByProduct = new Map<string, OfferRow[]>();
+  for (const offer of (offers ?? []) as OfferRow[]) {
+    const existing = offersByProduct.get(offer.product_id) ?? [];
+    existing.push(offer);
+    offersByProduct.set(offer.product_id, existing);
+  }
+
+  const specsByProduct = new Map<string, string[]>();
+  for (const spec of (specValues ?? []) as SpecValueRow[]) {
+    const arr = specsByProduct.get(spec.product_id) ?? [];
+    if (arr.length >= 2) continue;
+    const fieldName = Array.isArray(spec.spec_template_fields) ? spec.spec_template_fields[0]?.name : spec.spec_template_fields?.name;
+    const fieldValue = formatSpecValue(spec);
+    if (!fieldName || !fieldValue) continue;
+    arr.push(`${fieldName}: ${fieldValue}`);
+    specsByProduct.set(spec.product_id, arr);
+  }
 
   return (
     <main className="min-h-screen bg-white text-slate-900">
@@ -37,51 +102,71 @@ export default async function HomePage() {
           <p className="mt-4 max-w-xl text-base text-slate-600 sm:text-lg">
             BestPrice helps you discover products, compare merchant offers, and make better buying decisions quickly.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <a href="#latest" className="rounded-lg bg-slate-900 px-5 py-3 text-sm font-medium text-white">Browse products & offers</a>
-            <a href="#" className="rounded-lg border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700">Login / Sign up</a>
-          </div>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-600">How it works</h2>
-          <ol className="mt-3 space-y-3 text-sm text-slate-700">
-            <li>1. Explore active products by category.</li>
-            <li>2. Compare live offers from multiple merchants.</li>
-            <li>3. Pick the best value based on price, stock, and delivery info.</li>
-          </ol>
         </div>
       </section>
 
-      <section id="latest" className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+      <section id="latest" className="mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6 lg:px-8">
         <h2 className="text-2xl font-semibold">Latest active products</h2>
         {products && products.length > 0 ? (
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => (
-              <article key={product.id} className="rounded-xl border border-slate-200 p-4">
-                <h3 className="font-medium">{product.title}</h3>
-                <p className="mt-1 text-xs text-slate-500">/{product.slug}</p>
-              </article>
-            ))}
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {products.map((product) => {
+              const productOffers = offersByProduct.get(product.id) ?? [];
+              const lowestOffer = productOffers.reduce<OfferRow | null>((lowest, current) => {
+                if (!lowest) return current;
+                return current.price < lowest.price ? current : lowest;
+              }, null);
+              const summary = specsByProduct.get(product.id)?.join(" • ") || product.description || "Specifications will appear here when available.";
+              const image = Array.isArray(product.images) ? product.images[0] : null;
+
+              return (
+                <Link
+                  href={`/#${product.slug}`}
+                  key={product.id}
+                  className="group block rounded-2xl bg-white p-2 transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                >
+                  <article>
+                    <div className="relative aspect-square rounded-xl bg-[#f6f6f6] p-3">
+                      <button
+                        type="button"
+                        aria-label="Add to wishlist"
+                        className="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-slate-500 shadow-sm"
+                        onClick={(event) => event.preventDefault()}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
+                          <path d="M12 20s-6.8-4.35-9.33-8.03C.45 8.76 2.07 4.5 6.08 4.5c2.2 0 3.47 1.2 3.92 2.2.45-1 1.73-2.2 3.92-2.2 4.01 0 5.63 4.26 3.41 7.47C18.8 15.65 12 20 12 20z" />
+                        </svg>
+                      </button>
+                      {image ? (
+                        <img src={image} alt={product.title} className="h-full w-full object-contain" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">No image</div>
+                      )}
+                    </div>
+
+                    <div className="space-y-1 px-1 pb-1 pt-3">
+                      <h3 className="line-clamp-2 text-[15px] font-bold leading-5 text-black">{product.title}</h3>
+                      <p className="line-clamp-2 text-[13px] leading-5 text-slate-500">{summary}</p>
+                      <div className="pt-1">
+                        {lowestOffer ? (
+                          <>
+                            <p className="text-[20px] font-bold leading-6 text-black">{lowestOffer.price} {lowestOffer.currency}</p>
+                            <p className="text-xs text-slate-500">Installment options available at checkout</p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-[20px] font-bold leading-6 text-slate-300">—</p>
+                            <p className="text-xs text-slate-400">No active offers yet</p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">No active products yet.</p>
-        )}
-      </section>
-
-      <section className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-semibold">Recent offers</h2>
-        {offers && offers.length > 0 ? (
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {offers.map((offer) => (
-              <article key={offer.id} className="rounded-xl border border-slate-200 p-4">
-                <p className="text-sm text-slate-500">{(Array.isArray(offer.products) ? offer.products[0]?.title : (offer.products as { title?: string } | null)?.title) ?? "Product"}</p>
-                <p className="text-lg font-semibold">{offer.price} {offer.currency}</p>
-                <p className="text-xs text-slate-500">{offer.stock_status.replace("_", " ")}</p>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">No active offers yet.</p>
         )}
       </section>
 
