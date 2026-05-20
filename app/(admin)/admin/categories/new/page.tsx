@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { SubmitButton } from "@/components/admin/submit-button";
+import { CategoryForm } from "@/components/admin/category-form";
 import { requireAdmin } from "@/lib/auth/guards";
 
 const createCategorySchema = z.object({
@@ -69,30 +69,7 @@ export default async function NewCategoryPage({
         <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{params.error}</div>
       ) : null}
 
-      <form action={createCategory} className="grid gap-4 md:grid-cols-2">
-        <label className="space-y-1">
-          <span className="text-sm font-medium">Name *</span>
-          <input name="name" required className="w-full rounded border px-3 py-2 text-sm" placeholder="Smartphones" />
-        </label>
-        <label className="space-y-1">
-          <span className="text-sm font-medium">Slug *</span>
-          <input name="slug" required className="w-full rounded border px-3 py-2 text-sm" placeholder="smartphones" />
-        </label>
-        <label className="space-y-1 md:col-span-2">
-          <span className="text-sm font-medium">Status *</span>
-          <select name="status" required className="w-full rounded border px-3 py-2 text-sm" defaultValue="draft">
-            <option value="draft">Draft</option>
-            <option value="active">Active</option>
-            <option value="archived">Archived</option>
-          </select>
-        </label>
-        <div className="flex items-center justify-end gap-2 md:col-span-2">
-          <Link href="/admin/categories" className="rounded border px-3 py-2 text-sm hover:bg-slate-50">
-            Cancel
-          </Link>
-          <SubmitButton label="Create category" loadingLabel="Creating..." />
-        </div>
-      </form>
+      <CategoryForm action={createCategory} backHref="/admin/categories" submitLabel="Create category" submitLoadingLabel="Creating..." defaultValues={{ name: "", slug: "", status: "draft" }} />
     </section>
   );
 }
