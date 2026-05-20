@@ -75,7 +75,7 @@ export function MerchantForm({
         <input name="email" type="email" required defaultValue={defaultValues.email} className="w-full rounded border px-3 py-2 text-sm" />
       </label>
       <label className="space-y-1">
-        <span className="text-sm font-medium">Temporary password *</span>
+        <span className="text-sm font-medium">Initial password *</span>
         <input name="password" type="password" required defaultValue={defaultValues.password} className="w-full rounded border px-3 py-2 text-sm" />
       </label>
       <label className="space-y-1">
