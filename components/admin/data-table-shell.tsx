@@ -9,6 +9,8 @@ type DataTableShellProps = {
   errorMessage?: string;
   total?: number;
   children?: ReactNode;
+  columnCount?: number;
+  headers?: ReactNode;
 };
 
 export function DataTableShell({
@@ -17,15 +19,17 @@ export function DataTableShell({
   state = "empty",
   errorMessage,
   total,
-  children
+  children,
+  columnCount = 3,
+  headers
 }: DataTableShellProps) {
   const body =
     state === "loading" ? (
-      <tr><td className="p-3 text-slate-500" colSpan={3}>Loading records...</td></tr>
+      <tr><td className="p-3 text-slate-500" colSpan={columnCount}>Loading records...</td></tr>
     ) : state === "error" ? (
-      <tr><td className="p-3 text-red-600" colSpan={3}>{errorMessage ?? "Failed to load records."}</td></tr>
+      <tr><td className="p-3 text-red-600" colSpan={columnCount}>{errorMessage ?? "Failed to load records."}</td></tr>
     ) : state === "empty" ? (
-      <tr><td className="p-3 text-slate-500" colSpan={3}>No records yet.</td></tr>
+      <tr><td className="p-3 text-slate-500" colSpan={columnCount}>No records yet.</td></tr>
     ) : rows;
 
   const totalCount = typeof total === "number" ? total : state === "ready" ? 1 : 0;
@@ -42,7 +46,7 @@ export function DataTableShell({
       <div className="overflow-x-auto rounded border">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-left">
-            <tr><th className="p-2">Name</th><th className="p-2">Status</th><th className="p-2">Updated</th></tr>
+            {headers ?? <tr><th className="p-2">Name</th><th className="p-2">Status</th><th className="p-2">Updated</th></tr>}
           </thead>
           <tbody>{body}</tbody>
         </table>
