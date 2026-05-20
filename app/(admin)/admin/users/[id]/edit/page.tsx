@@ -5,12 +5,22 @@ import { SubmitButton } from "@/components/admin/submit-button";
 import { requireAdmin } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-const editUserSchema = z.object({
-  fullName: z.string().trim().min(2),
-  role: z.enum(["admin", "merchant", "user"]),
-  merchantId: z.string().uuid().optional().or(z.literal("")),
-  merchantAccess: z.enum(["owner", "manager", "staff", ""]).optional()
-});
+const editUserSchema = z
+  .object({
+    fullName: z.string().trim().min(2),
+    role: z.enum(["admin", "merchant", "user"]),
+    merchantId: z.string().uuid().optional().or(z.literal("")),
+    merchantAccess: z.enum(["owner", "manager", "staff", ""]).optional()
+  })
+  .superRefine((value, ctx) => {
+    if (value.role === "merchant" && !value.merchantAccess) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["merchantAccess"],
+        message: "Please select a merchant access level for merchant users."
+      });
+    }
+  });
 
 export default async function EditUserPage({
   params,
@@ -58,7 +68,7 @@ export default async function EditUserPage({
     if (profileError) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(profileError.message)}`);
 
     if (parsed.data.role === "merchant" && parsed.data.merchantId) {
-      const { data: existing } = await admin.from("merchants").select("id,profile_id").eq("id", parsed.data.merchantId).single();
+      const { data: existing } = await admin.from("merchants").select("id,profile_id").eq("id", parsed.data.merchantId).maybeSingle();
       if (!existing) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent("Selected merchant does not exist.")}`);
       if (existing.profile_id && existing.profile_id !== id) {
         redirect(`/admin/users/${id}/edit?error=${encodeURIComponent("This merchant already has a linked user account.")}`);
