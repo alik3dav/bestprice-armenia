@@ -44,47 +44,53 @@ export default async function EditUserPage({
 
   async function updateUser(formData: FormData) {
     "use server";
-    await requireAdmin();
-    const parsed = editUserSchema.safeParse(Object.fromEntries(formData.entries()));
-    if (!parsed.success) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(parsed.error.issues[0]?.message ?? "Invalid form data")}`);
 
-    const merchantAccessLevel = parsed.data.role === "merchant" ? parsed.data.merchantAccess : null;
+    try {
+      await requireAdmin();
+      const parsed = editUserSchema.safeParse(Object.fromEntries(formData.entries()));
+      if (!parsed.success) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(parsed.error.issues[0]?.message ?? "Invalid form data")}`);
 
-    if (parsed.data.role === "merchant" && !parsed.data.merchantId) {
-      redirect(`/admin/users/${id}/edit?error=${encodeURIComponent("Please select a merchant for merchant role users.")}`);
-    }
+      const merchantAccessLevel = parsed.data.role === "merchant" ? parsed.data.merchantAccess : null;
 
-    const admin = createAdminClient();
-
-    const { error: profileError } = await admin
-      .from("profiles")
-      .update({
-        full_name: parsed.data.fullName,
-        role: parsed.data.role,
-        merchant_access_level: merchantAccessLevel || null
-      })
-      .eq("id", id);
-
-    if (profileError) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(profileError.message)}`);
-
-    if (parsed.data.role === "merchant" && parsed.data.merchantId) {
-      const { data: existing } = await admin.from("merchants").select("id,profile_id").eq("id", parsed.data.merchantId).maybeSingle();
-      if (!existing) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent("Selected merchant does not exist.")}`);
-      if (existing.profile_id && existing.profile_id !== id) {
-        redirect(`/admin/users/${id}/edit?error=${encodeURIComponent("This merchant already has a linked user account.")}`);
+      if (parsed.data.role === "merchant" && !parsed.data.merchantId) {
+        redirect(`/admin/users/${id}/edit?error=${encodeURIComponent("Please select a merchant for merchant role users.")}`);
       }
 
-      const { error: clearError } = await admin.from("merchants").update({ profile_id: null }).eq("profile_id", id).neq("id", parsed.data.merchantId);
-      if (clearError) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(clearError.message)}`);
+      const admin = createAdminClient();
 
-      const { error: linkError } = await admin.from("merchants").update({ profile_id: id }).eq("id", parsed.data.merchantId);
-      if (linkError) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(linkError.message)}`);
-    } else {
-      const { error: unlinkError } = await admin.from("merchants").update({ profile_id: null }).eq("profile_id", id);
-      if (unlinkError) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(unlinkError.message)}`);
+      const { error: profileError } = await admin
+        .from("profiles")
+        .update({
+          full_name: parsed.data.fullName,
+          role: parsed.data.role,
+          merchant_access_level: merchantAccessLevel || null
+        })
+        .eq("id", id);
+
+      if (profileError) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(profileError.message)}`);
+
+      if (parsed.data.role === "merchant" && parsed.data.merchantId) {
+        const { data: existing } = await admin.from("merchants").select("id,profile_id").eq("id", parsed.data.merchantId).maybeSingle();
+        if (!existing) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent("Selected merchant does not exist.")}`);
+        if (existing.profile_id && existing.profile_id !== id) {
+          redirect(`/admin/users/${id}/edit?error=${encodeURIComponent("This merchant already has a linked user account.")}`);
+        }
+
+        const { error: clearError } = await admin.from("merchants").update({ profile_id: null }).eq("profile_id", id).neq("id", parsed.data.merchantId);
+        if (clearError) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(clearError.message)}`);
+
+        const { error: linkError } = await admin.from("merchants").update({ profile_id: id }).eq("id", parsed.data.merchantId);
+        if (linkError) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(linkError.message)}`);
+      } else {
+        const { error: unlinkError } = await admin.from("merchants").update({ profile_id: null }).eq("profile_id", id);
+        if (unlinkError) redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(unlinkError.message)}`);
+      }
+
+      redirect("/admin/users?success=User+updated");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to update user.";
+      redirect(`/admin/users/${id}/edit?error=${encodeURIComponent(message)}`);
     }
-
-    redirect("/admin/users?success=User+updated");
   }
 
   return (
