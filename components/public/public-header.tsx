@@ -10,9 +10,9 @@ export function PublicHeader({ userEmail }: { userEmail: string | null }) {
   const [openAuth, setOpenAuth] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
 
-  const supabase = createClient();
-
   async function handleLogout() {
+    const supabase = createClient();
+    if (!supabase) return;
     await supabase.auth.signOut();
     window.location.reload();
   }
