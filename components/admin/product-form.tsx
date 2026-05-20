@@ -5,6 +5,7 @@ import type { Route } from "next";
 import { useEffect, useMemo, useState } from "react";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { createSlug } from "@/lib/slug";
+import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 
 type Category = { id: string; name: string; status: string };
 type SpecFieldType = "text" | "number" | "boolean" | "select" | "multi-select";
@@ -28,6 +29,11 @@ export function ProductForm({ action, categories, templatesByCategory, backHref,
   const [title, setTitle] = useState(defaultValues.title);
   const [slug, setSlug] = useState(defaultValues.slug);
   const [slugEdited, setSlugEdited] = useState(Boolean(defaultValues.slug));
+  const [images, setImages] = useState(defaultValues.images);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  const supabase = useMemo(() => createSupabaseClient(), []);
 
   const template = templatesByCategory[categoryId];
   const fields = useMemo(() => template?.groups.flatMap((g) => g.fields) ?? [], [template]);
@@ -70,6 +76,7 @@ export function ProductForm({ action, categories, templatesByCategory, backHref,
         }
       }
       formData.set("specValues", JSON.stringify(values));
+      formData.set("images", images);
       formData.set("specTemplateId", template?.templateId ?? "");
       action(formData);
     }} className="grid gap-4 md:grid-cols-2">
@@ -84,7 +91,41 @@ export function ProductForm({ action, categories, templatesByCategory, backHref,
       </div>
       {specError ? <div className="md:col-span-2 rounded border border-red-200 bg-red-50 p-2 text-xs text-red-700">{specError}</div> : null}
 
-      <label className="space-y-1 md:col-span-2"><span className="text-sm font-medium">Images</span><textarea name="images" defaultValue={defaultValues.images} rows={3} className="w-full rounded border px-3 py-2 text-sm" /></label>
+      <label className="space-y-1 md:col-span-2">
+        <span className="text-sm font-medium">Images</span>
+        <textarea name="images" value={images} onChange={(e) => setImages(e.target.value)} rows={3} className="w-full rounded border px-3 py-2 text-sm" />
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={async (event) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
+              setUploadError(null);
+              setIsUploadingImage(true);
+              const extension = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+              const bucket = process.env.NEXT_PUBLIC_SUPABASE_PRODUCT_IMAGES_BUCKET ?? "product-images";
+              const filePath = `products/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+              const { error } = await supabase.storage.from(bucket).upload(filePath, file, { upsert: false });
+              if (error) {
+                setUploadError(error.message);
+                setIsUploadingImage(false);
+                return;
+              }
+              const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
+              if (data.publicUrl) {
+                setImages((prev) => (prev.trim() ? `${prev.trim()}\n${data.publicUrl}` : data.publicUrl));
+              }
+              setIsUploadingImage(false);
+              event.target.value = "";
+            }}
+            className="block text-xs"
+          />
+          {isUploadingImage ? <span className="text-xs text-slate-500">Uploading image…</span> : null}
+        </div>
+        {uploadError ? <p className="text-xs text-red-600">{uploadError}</p> : null}
+        <p className="text-xs text-slate-500">Upload an image to Supabase Storage and it will be appended here as a public URL.</p>
+      </label>
       <label className="space-y-1 md:col-span-2"><span className="text-sm font-medium">Description</span><textarea name="description" defaultValue={defaultValues.description} rows={5} className="w-full rounded border px-3 py-2 text-sm" /></label>
       <div className="flex items-center justify-end gap-2 md:col-span-2"><Link href={backHref} className="rounded border px-3 py-2 text-sm hover:bg-slate-50">Cancel</Link><SubmitButton label={submitLabel} loadingLabel={submitLoadingLabel} disabled={disableSubmit} /></div>
     </form>
