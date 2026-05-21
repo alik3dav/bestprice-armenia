@@ -43,8 +43,8 @@ export default async function HomePage() {
         {categories.length > 0 ? (
           <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
             {categories.map((category) => (
-              <Link key={category.id} href={`/categories/${category.slug}`} className="group rounded-xl border border-slate-200 bg-white p-2 transition hover:border-slate-300 hover:shadow-sm">
-                <div className="aspect-[4/3] w-full rounded-lg bg-slate-800/95 p-3">
+              <Link key={category.id} href={`/categories/${category.slug}`} className="group rounded-xl  bg-[#f6f6f6] p-2 transition hover:border-slate-300 ">
+                <div className="aspect-[4/3] w-full rounded-lg p-3">
                   {category.image_url ? (
                     <img
                       src={category.image_url}
@@ -57,7 +57,7 @@ export default async function HomePage() {
                     </div>
                   )}
                 </div>
-                <p className="mt-2 line-clamp-2 text-sm font-medium text-slate-900">{category.name}</p>
+                <p className="mt-2 line-clamp-2 text-center text-sm font-medium text-slate-900">{category.name}</p>
               </Link>
             ))}
           </div>
