@@ -13,8 +13,10 @@ const payloadSchema = z.object({
 export default async function NewSpecTemplatePage({ searchParams }: { searchParams?: Promise<{ error?: string }> }) {
   const { supabase } = await requireAdmin();
   const params = await searchParams;
-  const categoriesResult = await supabase.from("categories").select("id,name,status").order("name", { ascending: true });
-  const categories = categoriesResult.data ?? [];
+  const categoriesResult = await supabase.from("categories").select("id,name,status,parent_id").order("name", { ascending: true });
+  const allCategories = categoriesResult.data ?? [];
+  const parentIds = new Set(allCategories.map((c:any)=>c.parent_id).filter(Boolean));
+  const categories = allCategories.filter((c:any)=>!parentIds.has(c.id));
 
   async function createSpecTemplate(formData: FormData) {
     "use server";

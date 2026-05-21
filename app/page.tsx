@@ -26,11 +26,11 @@ export default async function HomePage() {
 
       const { data: categoriesData } = await supabase
         .from("categories")
-        .select("id,name,slug,image_url")
+        .select("id,name,slug,image_url,parent_id")
         .eq("status", "active")
         .order("name");
 
-      categories = categoriesData ?? [];
+      categories = (categoriesData ?? []).filter((c:any) => !c.parent_id);
     } catch (error) {
       console.error("Failed to load homepage categories from Supabase", error);
     }

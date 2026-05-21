@@ -12,7 +12,8 @@ const createCategorySchema = z.object({
     .min(2, "Slug must be at least 2 characters.")
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase and use hyphens only."),
   status: z.enum(["draft", "active", "archived"]),
-  imageUrl: z.string().trim().optional()
+  imageUrl: z.string().trim().optional(),
+  parentId: z.string().uuid().optional().or(z.literal(""))
 });
 
 export default async function NewCategoryPage({
@@ -22,6 +23,8 @@ export default async function NewCategoryPage({
 }) {
   await requireAdmin();
   const params = await searchParams;
+  const categoriesResult = await (await requireAdmin()).supabase.from("categories").select("id,name,parent_id").order("name");
+  const categoryOptions = (categoriesResult.data ?? []).map((c:any)=>({id:c.id,name:c.name,depth:c.parent_id?1:0}));
 
   async function createCategory(formData: FormData) {
     "use server";
@@ -31,7 +34,8 @@ export default async function NewCategoryPage({
       name: formData.get("name"),
       slug: formData.get("slug"),
       status: formData.get("status"),
-      imageUrl: formData.get("imageUrl")
+      imageUrl: formData.get("imageUrl"),
+      parentId: formData.get("parentId")
     });
 
     if (!parsed.success) {
@@ -46,7 +50,8 @@ export default async function NewCategoryPage({
       name: parsed.data.name,
       slug: parsed.data.slug,
       status: parsed.data.status,
-      image_url: parsed.data.imageUrl || null
+      image_url: parsed.data.imageUrl || null,
+      parent_id: parsed.data.parentId || null
     });
 
     if (error) {
@@ -72,7 +77,7 @@ export default async function NewCategoryPage({
         <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{params.error}</div>
       ) : null}
 
-      <CategoryForm action={createCategory} backHref="/admin/categories" submitLabel="Create category" submitLoadingLabel="Creating..." defaultValues={{ name: "", slug: "", status: "draft", imageUrl: "" }} />
+      <CategoryForm action={createCategory} backHref="/admin/categories" submitLabel="Create category" submitLoadingLabel="Creating..." defaultValues={{ name: "", slug: "", status: "draft", imageUrl: "", parentId: "" }} categoryOptions={categoryOptions} />
     </section>
   );
 }
