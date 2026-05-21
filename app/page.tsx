@@ -132,6 +132,9 @@ export default async function HomePage() {
           <p className="mt-4 max-w-xl text-base text-slate-600 sm:text-lg">
             BestPrice helps you discover products, compare merchant offers, and make better buying decisions quickly.
           </p>
+          <div className="mt-6">
+            <Link href="/shop" className="inline-flex rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white">Browse full shop</Link>
+          </div>
         </div>
       </section>
 

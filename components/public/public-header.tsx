@@ -20,7 +20,7 @@ export function PublicHeader({ userEmail }: { userEmail: string | null }) {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-10">
           <Link href="/" className="text-lg font-semibold tracking-tight text-slate-900">BestPrice</Link>
           {!userEmail ? (
             <button className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white" onClick={() => setOpenAuth(true)}>
