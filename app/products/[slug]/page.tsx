@@ -199,10 +199,6 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
             <div className="space-y-5 xl:pl-2">
               <CategoryBreadcrumbs items={breadcrumbItems} />
-              <Link href={categoryPath.length ? `/categories/${categoryPath.map((c) => c.slug).join("/")}` : "/categories"} className="inline-block text-sm text-slate-600 hover:underline">
-                ← Back to {categoryPath.length ? categoryPath[categoryPath.length - 1].name : "products"}
-              </Link>
-              {category ? <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{category.name}</p> : null}
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">{product.title}</h1>
               <p className="text-base leading-7 text-slate-600">{product.short_description || "No short description available."}</p>
 
