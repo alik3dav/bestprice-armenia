@@ -22,7 +22,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
 
     try {
       const supabase = createClient();
-      if (!supabase) throw new Error("Authentication is currently unavailable. Please try again later.");
+      if (!supabase) throw new Error("Նույնականացումը այս պահին անհասանելի է։ Խնդրում ենք փորձել ավելի ուշ։");
 
       if (mode === "login") {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
@@ -40,10 +40,10 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
           },
         });
         if (signUpError) throw signUpError;
-        setMessage("Account created. Check your email if confirmation is required.");
+        setMessage("Հաշիվը ստեղծված է։ Եթե պահանջվում է հաստատում, ստուգեք ձեր էլ․ փոստը։");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Authentication failed");
+      setError(err instanceof Error ? err.message : "Նույնականացումը ձախողվեց");
     } finally {
       setLoading(false);
     }
@@ -53,15 +53,15 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-900">{mode === "login" ? "Welcome back" : "Create account"}</h2>
+          <h2 className="text-xl font-semibold text-slate-900">{mode === "login" ? "Բարի վերադարձ" : "Ստեղծել հաշիվ"}</h2>
           <button onClick={onClose} className="rounded p-1 text-slate-500 hover:bg-slate-100">✕</button>
         </div>
-        <p className="mb-4 text-sm text-slate-600">For customers only. Merchant and admin access use dedicated portals.</p>
+        <p className="mb-4 text-sm text-slate-600">Միայն գնորդների համար։ Վաճառողի և ադմինի մուտքը առանձին պորտալներով է։</p>
         <form onSubmit={handleSubmit} className="space-y-3">
           {mode === "signup" && (
             <input
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              placeholder="Full name"
+              placeholder="Ամբողջական անուն"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
             />
@@ -70,7 +70,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
             type="email"
             required
-            placeholder="Email"
+            placeholder="Էլ․ փոստ"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -78,7 +78,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
             className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
             type="password"
             required
-            placeholder="Password"
+            placeholder="Գաղտնաբառ"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -89,14 +89,14 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
             disabled={loading}
             className="w-full rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
           >
-            {loading ? "Please wait..." : mode === "login" ? "Login" : "Sign up"}
+            {loading ? "Խնդրում ենք սպասել..." : mode === "login" ? "Մուտք" : "Գրանցում"}
           </button>
         </form>
         <button
           className="mt-4 w-full text-center text-sm text-slate-600 hover:text-slate-900"
           onClick={() => setMode(mode === "login" ? "signup" : "login")}
         >
-          {mode === "login" ? "No account? Sign up" : "Already have an account? Login"}
+          {mode === "login" ? "Հաշիվ չունե՞ք։ Գրանցվել" : "Արդեն ունե՞ք հաշիվ։ Մուտք գործել"}
         </button>
       </div>
     </div>

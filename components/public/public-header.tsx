@@ -10,7 +10,7 @@ export function PublicHeader({ userEmail }: { userEmail: string | null }) {
   const [openAuth, setOpenAuth] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
 
-  async function handleLogout() {
+  async function handleԵլք() {
     const supabase = createClient();
     if (!supabase) return;
     await supabase.auth.signOut();
@@ -24,7 +24,7 @@ export function PublicHeader({ userEmail }: { userEmail: string | null }) {
           <Link href="/" className="text-lg font-semibold tracking-tight text-slate-900">BestPrice</Link>
           {!userEmail ? (
             <button className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white" onClick={() => setOpenAuth(true)}>
-              Login
+              Մուտք
             </button>
           ) : (
             <div className="relative flex items-center gap-2">
@@ -36,8 +36,8 @@ export function PublicHeader({ userEmail }: { userEmail: string | null }) {
               </button>
               {openMenu && (
                 <div className="absolute right-0 top-12 w-44 rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
-                  <a className="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100" href="#">Profile / Account</a>
-                  <button className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-slate-100" onClick={handleLogout}>Logout</button>
+                  <a className="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100" href="#">Անձնական էջ / Հաշիվ</a>
+                  <button className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-slate-100" onClick={handleԵլք}>Ելք</button>
                 </div>
               )}
             </div>
