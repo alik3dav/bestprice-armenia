@@ -16,6 +16,10 @@ export function PublicHeader({ userEmail }: { userEmail: string | null }) {
   useEffect(() => {
     const value = window.localStorage.getItem("bp_display_currency");
     if (value === "EUR" || value === "USD" || value === "AMD") setDisplayCurrencyState(value);
+
+    const openAuthListener = () => setOpenAuth(true);
+    window.addEventListener("bp:open-auth", openAuthListener as EventListener);
+    return () => window.removeEventListener("bp:open-auth", openAuthListener as EventListener);
   }, []);
 
   async function handleԵլք() {

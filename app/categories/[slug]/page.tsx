@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PublicHeader } from "@/components/public/public-header";
+import { PublicFooter } from "@/components/public/public-footer";
 import { ShopFilters } from "@/components/public/shop-filters";
 import { createClient } from "@/lib/supabase/server";
 import { PriceText } from "@/components/public/price-text";
@@ -25,7 +26,8 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 
 export default async function CategoryPage({ params, searchParams }) {
   const [{ slug }, queryParams] = await Promise.all([params, searchParams]);
-  if (!hasSupabaseEnv()) return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={null} /><section className="mx-auto w-full max-w-7xl p-6">Supabase not configured.</section></main>;
+  if (!hasSupabaseEnv()) return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={null} /><section className="mx-auto w-full max-w-7xl p-6">Supabase not configured.</section>      <PublicFooter />
+    </main>;
   const supabase = await createClient();
   const authResult = await supabase.auth.getUser();
   const userEmail = authResult.data.user?.email ?? null;
@@ -126,5 +128,6 @@ export default async function CategoryPage({ params, searchParams }) {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"><aside className="lg:pr-6"><div className="sticky top-20"><ShopFilters params={queryParams} merchantIds={Array.from(new Set(offers.map((o) => o.merchant_id)))} specFilters={specFilters} /></div></aside>
       <div>{productsError ? <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">Failed to load products.</p> : null}
       {products.length === 0 ? <p className="rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">No products in this category yet.</p> : sorted.length === 0 && hasAnyFilters ? <p className="rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">Products exist, but no results match the selected filters.</p> : sorted.length === 0 ? <p className="rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">No products found for selected filters.</p> : <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{sorted.map((p) => { const po = offersByProduct.get(p.id) ?? []; const lowest = po.reduce((m, o) => (!m || o.price < m.price ? o : m), null); const image = Array.isArray(p.images) ? p.images[0] : null; return <Link href={`/products/${p.slug}`} key={p.id} className="group block p-2 transition"><article><div className="relative aspect-square rounded-xl bg-[#f6f6f6] p-3">{image ? <img src={String(image)} alt={p.title} className="h-full w-full object-contain mix-blend-multiply contrast-108 brightness-102" /> : <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">No image</div>}</div><div className="space-y-1 px-1 pb-1 pt-3"><h3 className="line-clamp-2 text-[15px] font-bold leading-5 text-black">{p.title}</h3><p className="line-clamp-2 text-[13px] leading-5 text-slate-500">{p.short_description || p.description || "No short description available."}</p><div className="pt-1">{lowest ? <p className="text-[20px] font-bold leading-6 text-black"><PriceText amountAMD={Number(lowest.price)} /></p> : <p className="text-[20px] font-bold leading-6 text-slate-300">—</p>}</div></div></article></Link>; })}</div>}</div></div>
-    </div></section></main>;
+    </div></section>      <PublicFooter />
+    </main>;
 }

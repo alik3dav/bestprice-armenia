@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { PublicHeader } from "@/components/public/public-header";
+import { PublicFooter } from "@/components/public/public-footer";
 import { LatestProductsSection, LatestProductsSkeleton } from "@/components/public/latest-products-section";
 import { createClient } from "@/lib/supabase/server";
 
@@ -71,6 +72,8 @@ export default async function HomePage() {
       <Suspense fallback={<LatestProductsSkeleton />}>
         <LatestProductsSection />
       </Suspense>
+
+      <PublicFooter />
     </main>
   );
 }
