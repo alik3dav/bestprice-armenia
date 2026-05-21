@@ -1,14 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, User } from "lucide-react";
 import { AuthModal } from "@/components/public/auth-modal";
 import { createClient } from "@/lib/supabase/client";
+import { CURRENCY_LABELS, DEFAULT_CURRENCY, SUPPORTED_DISPLAY_CURRENCIES, type SupportedDisplayCurrency } from "@/lib/money";
+import { setDisplayCurrency } from "@/components/public/price-text";
 
 export function PublicHeader({ userEmail }: { userEmail: string | null }) {
   const [openAuth, setOpenAuth] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
+  const [displayCurrency, setDisplayCurrencyState] = useState<SupportedDisplayCurrency>(DEFAULT_CURRENCY);
+
+  useEffect(() => {
+    const value = window.localStorage.getItem("bp_display_currency");
+    if (value === "EUR" || value === "USD" || value === "AMD") setDisplayCurrencyState(value);
+  }, []);
 
   async function handleԵլք() {
     const supabase = createClient();
@@ -35,8 +43,14 @@ export function PublicHeader({ userEmail }: { userEmail: string | null }) {
                 <Menu size={16} />
               </button>
               {openMenu && (
-                <div className="absolute right-0 top-12 w-44 rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
+                <div className="absolute right-0 top-12 w-56 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
                   <a className="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100" href="#">Անձնական էջ / Հաշիվ</a>
+                  <div className="px-3 py-2">
+                    <p className="text-xs text-slate-500">Ցուցադրման արժույթ</p>
+                    <select value={displayCurrency} onChange={(e) => { const c = e.target.value as SupportedDisplayCurrency; setDisplayCurrencyState(c); setDisplayCurrency(c); }} className="mt-1 w-full rounded border px-2 py-1 text-xs">
+                      {SUPPORTED_DISPLAY_CURRENCIES.map((c) => <option key={c} value={c}>{c} — {CURRENCY_LABELS[c]}</option>)}
+                    </select>
+                  </div>
                   <button className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-slate-100" onClick={handleԵլք}>Ելք</button>
                 </div>
               )}

@@ -11,7 +11,7 @@ type ProductOption = { id: string; title: string };
 type OfferFormValues = {
   productId: string;
   price: string;
-  currency: string;
+
   stockStatus: "in_stock" | "limited" | "out_of_stock" | "preorder";
   status: "draft" | "active" | "archived";
   merchantSku: string;
@@ -51,8 +51,8 @@ export function OfferForm({ action, products, defaultValues, backHref, submitLab
             {filteredProducts.map((product) => <option key={product.id} value={product.id}>{product.title}</option>)}
           </select>
         </label>
-        <label className="space-y-1"><span className="text-sm font-medium">Price</span><input name="price" type="number" min="0" step="0.01" required defaultValue={defaultValues.price} className="w-full rounded border px-3 py-2 text-sm" /></label>
-        <label className="space-y-1"><span className="text-sm font-medium">Currency</span><input name="currency" required defaultValue={defaultValues.currency} className="w-full rounded border px-3 py-2 text-sm" /></label>
+        <label className="space-y-1"><span className="text-sm font-medium">Price (AMD ֏)</span><input name="price" type="number" min="0" step="1" required defaultValue={defaultValues.price} className="w-full rounded border px-3 py-2 text-sm" /></label>
+        <label className="space-y-1"><span className="text-sm font-medium">Currency</span><input name="currency" readOnly value="AMD" className="w-full rounded border bg-slate-50 px-3 py-2 text-sm" /></label>
         <label className="space-y-1"><span className="text-sm font-medium">Stock status</span><select name="stockStatus" defaultValue={defaultValues.stockStatus} className="w-full rounded border px-3 py-2 text-sm"><option value="in_stock">In stock</option><option value="limited">Limited</option><option value="out_of_stock">Out of stock</option><option value="preorder">Preorder</option></select></label>
         <label className="space-y-1"><span className="text-sm font-medium">Offer status</span><select name="status" defaultValue={defaultValues.status} className="w-full rounded border px-3 py-2 text-sm"><option value="draft">Draft</option><option value="active">Active</option><option value="archived">Inactive</option></select></label>
         <label className="space-y-1"><span className="text-sm font-medium">Merchant SKU (optional)</span><input name="merchantSku" defaultValue={defaultValues.merchantSku} className="w-full rounded border px-3 py-2 text-sm" /></label>
