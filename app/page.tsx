@@ -6,8 +6,8 @@ import { LatestProductsSection, LatestProductsSkeleton } from "@/components/publ
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "BestPrice Armenia | Compare Products & Merchant Offers",
-  description: "Compare products and merchant offers in one place.",
+  title: "BestPrice Armenia | Ապրանքների և առաջարկների համեմատում",
+  description: "Համեմատեք ապրանքներն ու վաճառողների առաջարկները մեկ վայրում։",
 };
 
 function hasSupabaseEnv() {
@@ -41,7 +41,7 @@ export default async function HomePage() {
       <PublicHeader userEmail={user?.email ?? null} />
 
       <section className="w-full px-4 py-8 sm:px-6 lg:px-10">
-        <h1 className="text-2xl font-semibold tracking-tight">Popular Categories</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Հանրաճանաչ կատեգորիաներ</h1>
         {categories.length > 0 ? (
           <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
             {categories.map((category) => (
@@ -64,7 +64,7 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">No active categories yet.</p>
+          <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">Ակտիվ կատեգորիաներ դեռ չկան։</p>
         )}
       </section>
 

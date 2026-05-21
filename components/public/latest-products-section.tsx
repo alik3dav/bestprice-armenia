@@ -56,7 +56,7 @@ export async function LatestProductsSection() {
     return (
       <section className="w-full px-4 pb-10 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-2xl font-semibold tracking-tight">Latest Products</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">Վերջին ավելացված ապրանքներ</h2>
           <Link href="/" className="text-sm font-medium text-slate-600 transition hover:text-slate-900 hover:underline">
             View all
           </Link>
@@ -81,12 +81,12 @@ export async function LatestProductsSection() {
                           className="h-full w-full object-contain mix-blend-multiply contrast-108 brightness-102"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">No image</div>
+                        <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">Նկար չկա</div>
                       )}
                     </div>
                     <div className="space-y-1 px-1 pb-1 pt-3">
                       <h3 className="line-clamp-2 text-[15px] font-bold leading-5 text-black">{product.title}</h3>
-                      <p className="line-clamp-2 text-[13px] leading-5 text-slate-500">{product.short_description || product.description || "No short description available."}</p>
+                      <p className="line-clamp-2 text-[13px] leading-5 text-slate-500">{product.short_description || product.description || "Կարճ նկարագրություն հասանելի չէ։"}</p>
                       <div className="pt-1">
                         {lowest ? (
                           <p className="text-[20px] font-bold leading-6 text-black">{lowest.price} {lowest.currency}</p>
@@ -131,8 +131,8 @@ export function LatestProductsSkeleton() {
 function EmptyState() {
   return (
     <section className="w-full px-4 pb-10 sm:px-6 lg:px-10">
-      <h2 className="text-2xl font-semibold tracking-tight">Latest Products</h2>
-      <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">No products available yet.</p>
+      <h2 className="text-2xl font-semibold tracking-tight">Վերջին ավելացված ապրանքներ</h2>
+      <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">Ապրանքներ դեռ հասանելի չեն։</p>
     </section>
   );
 }
@@ -140,8 +140,8 @@ function EmptyState() {
 function ErrorState() {
   return (
     <section className="w-full px-4 pb-10 sm:px-6 lg:px-10">
-      <h2 className="text-2xl font-semibold tracking-tight">Latest Products</h2>
-      <p className="mt-4 rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">Failed to load latest products.</p>
+      <h2 className="text-2xl font-semibold tracking-tight">Վերջին ավելացված ապրանքներ</h2>
+      <p className="mt-4 rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">Չհաջողվեց բեռնել վերջին ապրանքները։</p>
     </section>
   );
 }

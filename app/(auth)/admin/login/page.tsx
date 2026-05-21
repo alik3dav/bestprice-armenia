@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
     if (error) return setError(error.message);
 
     const userId = data.user?.id;
-    if (!userId) return setError("Unable to read signed-in user. Please try again.");
+    if (!userId) return setError("Չհաջողվեց ստանալ մուտք գործած օգտատիրոջ տվյալը։ Կրկին փորձեք։");
 
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
@@ -28,7 +28,7 @@ export default function AdminLoginPage() {
 
     if (profileError || !profile || profile.role !== "admin") {
       await supabase.auth.signOut();
-      return setError("Your account does not have admin access.");
+      return setError("Ձեր հաշիվը ադմինի հասանելիություն չունի։");
     }
 
     router.replace("/admin");
@@ -37,12 +37,12 @@ export default function AdminLoginPage() {
 
   return (
     <main className="mx-auto mt-20 max-w-md rounded-lg bg-white p-6 shadow">
-      <h1 className="mb-4 text-xl font-semibold">Admin Login</h1>
+      <h1 className="mb-4 text-xl font-semibold">Ադմինի մուտք</h1>
       <form className="space-y-3" onSubmit={onSubmit}>
-        <input className="w-full rounded border p-2" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input className="w-full rounded border p-2" placeholder="Κωδικός" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input className="w-full rounded border p-2" placeholder="Էլ․ փոստ" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input className="w-full rounded border p-2" placeholder="Գաղտնաբառ" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <button className="w-full rounded bg-slate-900 p-2 text-white">Sign in</button>
+        <button className="w-full rounded bg-slate-900 p-2 text-white">Մուտք գործել</button>
       </form>
     </main>
   );
