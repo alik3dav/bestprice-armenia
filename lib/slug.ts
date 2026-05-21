@@ -11,3 +11,6 @@ export function createSlug(input: string, separator: "-" | "_" = "-") {
 
   return normalized;
 }
+
+
+export const slugify = (input: string) => createSlug(input, "-");
