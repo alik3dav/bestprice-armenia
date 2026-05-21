@@ -1,5 +1,6 @@
 import { DataTableShell } from "@/components/admin/data-table-shell";
 import { requireAdmin } from "@/lib/auth/guards";
+import { PriceText } from "@/components/public/price-text";
 
 export default async function Page() {
   const { supabase } = await requireAdmin();
@@ -20,7 +21,7 @@ export default async function Page() {
         <tr key={offer.id} className="border-t">
           <td className="p-2">{Array.isArray(offer.products) ? (offer.products[0]?.title ?? "—") : ((offer.products as { title?: string } | null)?.title ?? "—")}</td>
           <td className="p-2">{Array.isArray(offer.merchants) ? (offer.merchants[0] ? `${offer.merchants[0].name} (${offer.merchants[0].slug})` : "—") : ((offer.merchants as { name?: string; slug?: string } | null) ? `${(offer.merchants as { name?: string; slug?: string }).name ?? "—"} (${(offer.merchants as { name?: string; slug?: string }).slug ?? "—"})` : "—")}</td>
-          <td className="p-2">{offer.price} {offer.currency}</td>
+          <td className="p-2"><PriceText amountAMD={Number(offer.price)} /></td>
           <td className="p-2 capitalize">{offer.status === "archived" ? "inactive" : offer.status}</td>
           <td className="p-2">{new Date(offer.updated_at).toLocaleString()}</td>
         </tr>

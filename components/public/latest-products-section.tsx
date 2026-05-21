@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { PriceText } from "@/components/public/price-text";
 
 type ProductRow = {
   id: string;
@@ -89,7 +90,7 @@ export async function LatestProductsSection() {
                       <p className="line-clamp-2 text-[13px] leading-5 text-slate-500">{product.short_description || product.description || "Կարճ նկարագրություն հասանելի չէ։"}</p>
                       <div className="pt-1">
                         {lowest ? (
-                          <p className="text-[20px] font-bold leading-6 text-black">{lowest.price} {lowest.currency}</p>
+                          <p className="text-[20px] font-bold leading-6 text-black"><PriceText amountAMD={Number(lowest.price)} /></p>
                         ) : (
                           <p className="text-[20px] font-bold leading-6 text-slate-300">—</p>
                         )}
