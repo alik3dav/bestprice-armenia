@@ -133,7 +133,7 @@ export default async function HomePage() {
             BestPrice helps you discover products, compare merchant offers, and make better buying decisions quickly.
           </p>
           <div className="mt-6">
-            <Link href="/shop" className="inline-flex rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white">Browse full shop</Link>
+            <Link href={categories[0] ? `/categories/${categories[0].slug}` : "/"} className="inline-flex rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white">Browse categories</Link>
           </div>
         </div>
       </section>
@@ -206,7 +206,7 @@ export default async function HomePage() {
         {categories && categories.length > 0 ? (
           <div className="mt-4 flex flex-wrap gap-2">
             {categories.map((category) => (
-              <Link key={category.id} href={`/#${category.slug}`} className="rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700">
+              <Link key={category.id} href={`/categories/${category.slug}`} className="rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700">
                 {category.name}
               </Link>
             ))}

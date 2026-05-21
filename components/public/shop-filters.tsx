@@ -1,20 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
-
-type CategoryRow = { id: string; name: string };
-type MerchantRow = { id: string; name: string };
+import { useMemo } from "react";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
 type Props = {
-  categories: CategoryRow[];
-  merchants: MerchantRow[];
   params: SearchParams;
+  merchantIds: string[];
+  specFilters: { fieldId: string; fieldName: string; key: string; groupName: string; options: string[] }[];
 };
-
-const DISPLAY_OPTIONS = ["OLED", "AMOLED", "IPS"];
-const STORAGE_OPTIONS = ["128GB", "256GB", "512GB"];
 
 const asArray = (value: string | string[] | undefined) => (Array.isArray(value) ? value : value ? [value] : []);
 
@@ -53,60 +47,28 @@ function CheckboxRow({ name, value, label, defaultChecked }: { name: string; val
   );
 }
 
-export function ShopFilters({ categories, merchants, params }: Props) {
-  const selectedCategories = asArray(params.category);
-  const selectedBrands = asArray(params.brand);
-  const selectedDisplay = asArray(params.display);
-  const selectedStorage = asArray(params.storage);
+export function ShopFilters({ params, merchantIds, specFilters }: Props) {
+  const selectedMerchants = asArray(params.merchant);
   const selectedStock = asArray(params.stock);
-
-  const [showAllCategories, setShowAllCategories] = useState(false);
-  const [showAllBrands, setShowAllBrands] = useState(false);
-
-  const visibleCategories = useMemo(() => (showAllCategories ? categories : categories.slice(0, 8)), [categories, showAllCategories]);
-  const visibleBrands = useMemo(() => (showAllBrands ? merchants : merchants.slice(0, 6)), [merchants, showAllBrands]);
+  const visibleMerchants = useMemo(() => merchantIds.slice(0, 10), [merchantIds]);
 
   return (
     <form method="get" className="space-y-5">
       <input type="hidden" name="sort" value={(Array.isArray(params.sort) ? params.sort[0] : params.sort) || "newest"} />
 
-      <FilterSection title="Category" count={selectedCategories.length}>
+      <FilterSection title="Merchant" count={selectedMerchants.length}>
         <div>
-          {visibleCategories.map((c) => (
-            <CheckboxRow key={c.id} name="category" value={c.id} label={c.name} defaultChecked={selectedCategories.includes(c.id)} />
+          {visibleMerchants.map((id) => (
+            <CheckboxRow key={id} name="merchant" value={id} label={id.slice(0, 8)} defaultChecked={selectedMerchants.includes(id)} />
           ))}
         </div>
-        {categories.length > 8 ? (
-          <button type="button" onClick={() => setShowAllCategories((v) => !v)} className="text-xs text-slate-500 hover:text-slate-800">
-            {showAllCategories ? "Show less" : "Show more"}
-          </button>
-        ) : null}
       </FilterSection>
 
-      <FilterSection title="Brand" count={selectedBrands.length}>
-        <div>
-          {visibleBrands.map((m) => (
-            <CheckboxRow key={m.id} name="brand" value={m.id} label={m.name} defaultChecked={selectedBrands.includes(m.id)} />
-          ))}
-        </div>
-        {merchants.length > 6 ? (
-          <button type="button" onClick={() => setShowAllBrands((v) => !v)} className="text-xs text-slate-500 hover:text-slate-800">
-            {showAllBrands ? "Show less" : "Show more"}
-          </button>
-        ) : null}
-      </FilterSection>
-
-      <FilterSection title="Display" count={selectedDisplay.length}>
-        {DISPLAY_OPTIONS.map((option) => (
-          <CheckboxRow key={option} name="display" value={option.toLowerCase()} label={option} defaultChecked={selectedDisplay.includes(option.toLowerCase())} />
-        ))}
-      </FilterSection>
-
-      <FilterSection title="Storage" count={selectedStorage.length}>
-        {STORAGE_OPTIONS.map((option) => (
-          <CheckboxRow key={option} name="storage" value={option.toLowerCase()} label={option} defaultChecked={selectedStorage.includes(option.toLowerCase())} />
-        ))}
-      </FilterSection>
+      {specFilters.length === 0 ? <p className="text-xs text-slate-500">No category specification filters.</p> : specFilters.map((f) => (
+        <FilterSection key={f.fieldId} title={f.fieldName} count={asArray(params[`spec_${f.fieldId}`]).length}>
+          {f.options.map((option) => <CheckboxRow key={option} name={`spec_${f.fieldId}`} value={option} label={option} defaultChecked={asArray(params[`spec_${f.fieldId}`]).includes(option)} />)}
+        </FilterSection>
+      ))}
 
       <FilterSection title="Price" count={0}>
         <div className="grid grid-cols-2 gap-2">
