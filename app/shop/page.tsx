@@ -39,7 +39,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
 
   let query = supabase.from("products").select("id,title,slug,description,short_description,images,category_id,created_at").eq("status", "active").limit(120);
   if (selectedCategory) query = query.eq("category_id", selectedCategory);
-  query = sort === "newest" ? query.order("created_at", { ascending: false }) : query.order("title");
+  query = query.order("created_at", { ascending: false });
   const { data: productsData, error: productsError } = await query;
   const products = (productsData ?? []) as ProductRow[];
   const ids = products.map((p) => p.id);
@@ -67,12 +67,21 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
     return true;
   });
 
+  const sorted = [...filtered].sort((a, b) => {
+    const lowA = (offersByProduct.get(a.id) ?? []).reduce<number | null>((m, o) => (m === null || o.price < m ? o.price : m), null);
+    const lowB = (offersByProduct.get(b.id) ?? []).reduce<number | null>((m, o) => (m === null || o.price < m ? o.price : m), null);
+    if (sort === "lowest") return (lowA ?? Number.POSITIVE_INFINITY) - (lowB ?? Number.POSITIVE_INFINITY);
+    if (sort === "highest") return (lowB ?? Number.NEGATIVE_INFINITY) - (lowA ?? Number.NEGATIVE_INFINITY);
+    if (sort === "popular") return a.title.localeCompare(b.title);
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+
   return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={userEmail} />
     <section className="w-full px-4 py-6 sm:px-6 lg:px-8"><div className="mx-auto w-full max-w-[1600px]"><div className="mb-5 flex items-center justify-between"><h1 className="text-2xl font-semibold">Shop</h1><Link href="/" className="text-sm text-slate-600 hover:underline">Back to landing</Link></div>
       <details className="mb-4 rounded-xl border p-3 lg:hidden"><summary className="cursor-pointer font-medium">Filters</summary><div className="pt-3"><FilterForm categories={(categories ?? []) as CategoryRow[]} merchants={(merchants ?? []) as MerchantRow[]} specFields={specFields} params={params} /></div></details>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"><aside className="hidden lg:block"><div className="sticky top-20 rounded-xl border p-4"><FilterForm categories={(categories ?? []) as CategoryRow[]} merchants={(merchants ?? []) as MerchantRow[]} specFields={specFields} params={params} /></div></aside>
       <div>{productsError ? <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">Failed to load products.</p> : null}
-      {filtered.length === 0 ? <p className="rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">No products found for selected filters.</p> : <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{filtered.map((p) => { const po = offersByProduct.get(p.id) ?? []; const lowest = po.reduce<OfferRow | null>((m, o) => (!m || o.price < m.price ? o : m), null); const image = Array.isArray(p.images) ? p.images[0] : null; return <Link href={`/products/${p.slug}`} key={p.id} className="group block rounded-2xl bg-white p-2 transition hover:-translate-y-0.5 hover:shadow-md"><article><div className="relative aspect-square rounded-xl bg-[#f6f6f6] p-3">{image ? <img src={image} alt={p.title} className="h-full w-full object-contain" /> : <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">No image</div>}</div><div className="space-y-1 px-1 pb-1 pt-3"><h3 className="line-clamp-2 text-[15px] font-bold leading-5 text-black">{p.title}</h3><p className="line-clamp-2 text-[13px] leading-5 text-slate-500">{p.short_description || p.description || "No short description available."}</p><div className="pt-1">{lowest ? <p className="text-[20px] font-bold leading-6 text-black">{lowest.price} {lowest.currency}</p> : <p className="text-[20px] font-bold leading-6 text-slate-300">—</p>}</div></div></article></Link>; })}</div>}</div></div>
+      {sorted.length === 0 ? <p className="rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">No products found for selected filters.</p> : <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{sorted.map((p) => { const po = offersByProduct.get(p.id) ?? []; const lowest = po.reduce<OfferRow | null>((m, o) => (!m || o.price < m.price ? o : m), null); const image = Array.isArray(p.images) ? p.images[0] : null; return <Link href={`/products/${p.slug}`} key={p.id} className="group block rounded-2xl bg-white p-2 transition hover:-translate-y-0.5 hover:shadow-md"><article><div className="relative aspect-square rounded-xl bg-[#f6f6f6] p-3">{image ? <img src={image} alt={p.title} className="h-full w-full object-contain" /> : <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">No image</div>}</div><div className="space-y-1 px-1 pb-1 pt-3"><h3 className="line-clamp-2 text-[15px] font-bold leading-5 text-black">{p.title}</h3><p className="line-clamp-2 text-[13px] leading-5 text-slate-500">{p.short_description || p.description || "No short description available."}</p><div className="pt-1">{lowest ? <p className="text-[20px] font-bold leading-6 text-black">{lowest.price} {lowest.currency}</p> : <p className="text-[20px] font-bold leading-6 text-slate-300">—</p>}</div></div></article></Link>; })}</div>}</div></div>
     </div></section></main>;
 }
 
