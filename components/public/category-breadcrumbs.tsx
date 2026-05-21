@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Route } from "next";
 
 export type BreadcrumbItem = {
   label: string;
@@ -14,7 +15,7 @@ export function CategoryBreadcrumbs({ items }: { items: BreadcrumbItem[] }) {
           return (
             <li key={`${item.label}-${index}`} className="inline-flex items-center gap-2">
               {item.href && !isLast ? (
-                <Link href={item.href} className="max-w-[180px] truncate hover:underline sm:max-w-none">
+                <Link href={item.href as Route} className="max-w-[180px] truncate hover:underline sm:max-w-none">
                   {item.label}
                 </Link>
               ) : (
