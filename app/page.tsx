@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { PublicHeader } from "@/components/public/public-header";
+import { LatestProductsSection, LatestProductsSkeleton } from "@/components/public/latest-products-section";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -65,6 +67,10 @@ export default async function HomePage() {
           <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">No active categories yet.</p>
         )}
       </section>
+
+      <Suspense fallback={<LatestProductsSkeleton />}>
+        <LatestProductsSection />
+      </Suspense>
     </main>
   );
 }
