@@ -55,7 +55,7 @@ export async function LatestProductsSection() {
     }
 
     return (
-      <section className="w-full px-4 pb-10 sm:px-6 lg:px-10">
+      <section id="latest-products" className="w-full px-4 pb-10 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-2xl font-semibold tracking-tight">Վերջին ավելացված ապրանքներ</h2>
           <Link href="/" className="text-sm font-medium text-slate-600 transition hover:text-slate-900 hover:underline">
