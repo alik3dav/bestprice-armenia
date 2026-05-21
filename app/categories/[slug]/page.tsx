@@ -8,6 +8,7 @@ import { ShopFilters } from "@/components/public/shop-filters";
 import { createClient } from "@/lib/supabase/server";
 import { PriceText } from "@/components/public/price-text";
 import { slugify } from "@/lib/slug";
+import { CategoryBreadcrumbs, breadcrumbJsonLd } from "@/components/public/category-breadcrumbs";
 
 const one = (v) => (Array.isArray(v) ? v[0] : v);
 const many = (v) => (Array.isArray(v) ? v : v ? [v] : []);
@@ -32,7 +33,7 @@ export default async function CategoryPage({ params, searchParams }) {
   const authResult = await supabase.auth.getUser();
   const userEmail = authResult.data.user?.email ?? null;
 
-  const { data: categoryBySlug, error: categoryError } = await supabase.from("categories").select("id,name,slug").eq("slug", slug).eq("status", "active").maybeSingle();
+  const { data: categoryBySlug, error: categoryError } = await supabase.from("categories").select("id,name,slug,parent_id").eq("slug", slug).eq("status", "active").maybeSingle();
   let category = categoryBySlug;
 
   if (!category && !categoryError) {
@@ -46,6 +47,25 @@ export default async function CategoryPage({ params, searchParams }) {
 
   if (!category) return notFound();
 
+
+  const { data: categoriesForPath } = await supabase.from("categories").select("id,name,slug,parent_id").eq("status", "active");
+  const byId = new Map((categoriesForPath ?? []).map((c) => [c.id, c]));
+  const path = [];
+  let c = category;
+  while (c) {
+    path.unshift(c);
+    c = c.parent_id ? byId.get(c.parent_id) : null;
+  }
+  const breadcrumbItems = [
+    { label: "Գլխավոր", href: "/" },
+    { label: "Կատեգորիաներ", href: "/categories" },
+    ...path.map((cat, i) => ({ label: cat.name, href: `/categories/${path.slice(0, i + 1).map((x) => x.slug).join("/")}` })),
+  ];
+  breadcrumbItems[breadcrumbItems.length - 1].href = undefined;
+  const breadcrumbLd = breadcrumbJsonLd([
+    ...breadcrumbItems.filter((i) => i.href),
+    { label: path[path.length - 1].name, href: `/categories/${path.map((x) => x.slug).join("/")}` },
+  ], process.env.NEXT_PUBLIC_SITE_URL);
   const sort = one(queryParams.sort) ?? "newest";
   const min = parseNumber(one(queryParams.min));
   const max = parseNumber(one(queryParams.max));
@@ -124,7 +144,7 @@ export default async function CategoryPage({ params, searchParams }) {
   const hasAnyFilters = merchants.length > 0 || stock.length > 0 || selectedSpecKeys.length > 0 || min !== null || max !== null;
 
   return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={userEmail} />
-    <section className="w-full px-4 py-6 sm:px-6 lg:px-8"><div className="mx-auto w-full max-w-[1600px]"><div className="mb-5 flex items-center justify-between"><h1 className="text-2xl font-semibold">{category.name}</h1><Link href="/" className="text-sm text-slate-600 hover:underline">Back to landing</Link></div>
+    <section className="w-full px-4 py-6 sm:px-6 lg:px-8"><div className="mx-auto w-full max-w-[1600px]"><CategoryBreadcrumbs items={breadcrumbItems} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} /><div className="mb-5 flex items-center justify-between"><h1 className="text-2xl font-semibold">{category.name}</h1><Link href="/" className="text-sm text-slate-600 hover:underline">Back to landing</Link></div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"><aside className="lg:pr-6"><div className="sticky top-20"><ShopFilters params={queryParams} merchantIds={Array.from(new Set(offers.map((o) => o.merchant_id)))} specFilters={specFilters} /></div></aside>
       <div>{productsError ? <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">Failed to load products.</p> : null}
       {products.length === 0 ? <p className="rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">No products in this category yet.</p> : sorted.length === 0 && hasAnyFilters ? <p className="rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">Products exist, but no results match the selected filters.</p> : sorted.length === 0 ? <p className="rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">No products found for selected filters.</p> : <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{sorted.map((p) => { const po = offersByProduct.get(p.id) ?? []; const lowest = po.reduce((m, o) => (!m || o.price < m.price ? o : m), null); const image = Array.isArray(p.images) ? p.images[0] : null; return <Link href={`/products/${p.slug}`} key={p.id} className="group block p-2 transition"><article><div className="relative aspect-square rounded-xl bg-[#f6f6f6] p-3">{image ? <img src={String(image)} alt={p.title} className="h-full w-full object-contain mix-blend-multiply contrast-108 brightness-102" /> : <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">No image</div>}</div><div className="space-y-1 px-1 pb-1 pt-3"><h3 className="line-clamp-2 text-[15px] font-bold leading-5 text-black">{p.title}</h3><p className="line-clamp-2 text-[13px] leading-5 text-slate-500">{p.short_description || p.description || "No short description available."}</p><div className="pt-1">{lowest ? <p className="text-[20px] font-bold leading-6 text-black"><PriceText amountAMD={Number(lowest.price)} /></p> : <p className="text-[20px] font-bold leading-6 text-slate-300">—</p>}</div></div></article></Link>; })}</div>}</div></div>

@@ -5,6 +5,7 @@ import { PublicHeader } from "@/components/public/public-header";
 import { PublicFooter } from "@/components/public/public-footer";
 import { createClient } from "@/lib/supabase/server";
 import { PriceText } from "@/components/public/price-text";
+import { CategoryBreadcrumbs, breadcrumbJsonLd, type BreadcrumbItem } from "@/components/public/category-breadcrumbs";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -18,7 +19,7 @@ type ProductRow = {
   images: unknown;
   category_id: string;
   status: "draft" | "active" | "archived";
-  categories: { id: string; name: string; slug: string } | { id: string; name: string; slug: string }[] | null;
+  categories: { id: string; name: string; slug: string; parent_id?: string | null } | { id: string; name: string; slug: string; parent_id?: string | null }[] | null;
 };
 
 type TemplateRow = { id: string; name: string; category_id: string };
@@ -66,7 +67,7 @@ async function getProductBySlug(slug: string) {
   const supabase = await createClient();
   const { data: product, error } = await supabase
     .from("products")
-    .select("id,title,slug,description,short_description,long_description,images,category_id,status,categories(id,name,slug)")
+    .select("id,title,slug,description,short_description,long_description,images,category_id,status,categories(id,name,slug,parent_id)")
     .eq("slug", slug)
     .eq("status", "active")
     .maybeSingle();
@@ -74,6 +75,19 @@ async function getProductBySlug(slug: string) {
   return (product ?? null) as ProductRow | null;
 }
 
+
+async function getCategoryAncestors(categoryId: string) {
+  const supabase = await createClient();
+  const { data: categories } = await supabase.from("categories").select("id,name,slug,parent_id").eq("status", "active");
+  const byId = new Map((categories ?? []).map((c) => [c.id, c]));
+  const chain = [];
+  let current = byId.get(categoryId);
+  while (current) {
+    chain.unshift(current);
+    current = current.parent_id ? byId.get(current.parent_id) : undefined;
+  }
+  return chain;
+}
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   if (!hasSupabaseEnv()) return { title: "Product | BestPrice Armenia", description: "Product details and latest merchant offers." };
@@ -137,10 +151,21 @@ export default async function ProductDetailPage({ params }: PageProps) {
   const lowestOffer = offerRows[0] ?? null;
   const imageList = Array.isArray(product.images) ? product.images.filter((v): v is string => typeof v === "string" && Boolean(v.trim())) : [];
   const category = extractSingle(product.categories);
+  const categoryPath = category ? await getCategoryAncestors(category.id) : [];
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: "Գլխավոր", href: "/" },
+    { label: "Կատեգորիաներ", href: "/categories" },
+    ...categoryPath.map((c) => ({ label: c.name, href: `/categories/${categoryPath.slice(0, categoryPath.findIndex((x) => x.id === c.id) + 1).map((x) => x.slug).join("/")}` })),
+    { label: product.title },
+  ];
+  const breadcrumbLd = breadcrumbJsonLd(
+    breadcrumbItems.filter((i): i is { label: string; href: string } => Boolean(i.href)).concat([{ label: product.title, href: `/products/${product.slug}` }]),
+    process.env.NEXT_PUBLIC_SITE_URL,
+  );
 
   return <main className="min-h-screen bg-white text-slate-900">{/* unchanged layout below */}
     <PublicHeader userEmail={userEmail} />
-    <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8"><nav aria-label="Breadcrumb" className="mb-4 text-sm text-slate-600"><ol className="flex flex-wrap items-center gap-2"><li><Link href="/" className="hover:underline">Home</Link></li><li aria-hidden="true" className="text-slate-400">/</li>{category ? <><li><Link href={`/categories/${category.slug}`} className="hover:underline">{category.name}</Link></li><li aria-hidden="true" className="text-slate-400">/</li></> : null}<li aria-current="page" className="font-medium text-slate-900">{product.title}</li></ol></nav><Link href={category ? `/categories/${category.slug}` : "/"} className="inline-block text-sm text-slate-600 hover:underline">← Back to {category ? category.name : "products"}</Link>
+    <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8"><CategoryBreadcrumbs items={breadcrumbItems} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} /><Link href={categoryPath.length ? `/categories/${categoryPath.map((c) => c.slug).join("/")}` : "/categories"} className="inline-block text-sm text-slate-600 hover:underline">← Back to {categoryPath.length ? categoryPath[categoryPath.length - 1].name : "products"}</Link>
       <article className="mt-4 grid gap-8 lg:grid-cols-2"><div className="space-y-3"><div className="relative aspect-square overflow-hidden rounded-2xl bg-[#f6f6f6] p-4">{imageList[0] ? <img src={imageList[0]} alt={product.title} className="h-full w-full object-contain mix-blend-multiply contrast-108 brightness-102" /> : <div className="flex h-full items-center justify-center text-sm text-slate-400">No image available.</div>}</div>{imageList.length > 1 ? <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">{imageList.slice(1).map((image, idx) => <div key={`${image}-${idx}`} className="aspect-square overflow-hidden rounded-lg border bg-[#f6f6f6] p-1"><img src={image} alt={`${product.title} image ${idx + 2}`} className="h-full w-full object-contain mix-blend-multiply contrast-108 brightness-102" /></div>)}</div> : null}</div>
       <div className="space-y-4">{category ? <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{category.name}</p> : null}<h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{product.title}</h1><p className="text-sm leading-6 text-slate-600">{product.short_description || "No short description available."}</p><div className="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p className="text-xs uppercase tracking-wide text-slate-500">Lowest active offer</p>{lowestOffer ? <p className="mt-1 text-3xl font-bold"><PriceText amountAMD={Number(lowestOffer.price)} /></p> : <p className="mt-1 text-sm text-slate-500">No active offers available right now.</p>}</div></div></article>
       <section className="mt-10 grid gap-8 lg:grid-cols-3"><div className="lg:col-span-2 space-y-8"><section><h2 className="text-xl font-semibold">Description</h2><div className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-700">{product.long_description || product.description || "Detailed description is not available yet."}</div></section>
