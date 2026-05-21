@@ -170,15 +170,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
       <section className="w-full px-4 py-8 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <div className="mx-auto w-full max-w-[1700px]">
-          <CategoryBreadcrumbs items={breadcrumbItems} />
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
 
-          <Link href={categoryPath.length ? `/categories/${categoryPath.map((c) => c.slug).join("/")}` : "/categories"} className="mt-3 inline-block text-sm text-slate-600 hover:underline">
-            ← Back to {categoryPath.length ? categoryPath[categoryPath.length - 1].name : "products"}
-          </Link>
-
-          <article className="mt-6 grid gap-8 xl:grid-cols-[minmax(0,48%)_minmax(0,52%)] xl:gap-10 2xl:gap-12">
-            <div className="space-y-4">
+          <article className="mt-2 grid gap-8 xl:grid-cols-[minmax(0,30%)_minmax(0,70%)] xl:items-start xl:gap-10 2xl:gap-12">
+            <aside className="space-y-4 xl:sticky xl:top-24">
               <div className="relative aspect-square overflow-hidden rounded-2xl bg-[#f6f6f6] p-4">
                 {imageList[0] ? <img src={imageList[0]} alt={product.title} className="h-full w-full object-contain mix-blend-multiply contrast-108 brightness-102" /> : <div className="flex h-full items-center justify-center text-sm text-slate-400">No image available.</div>}
               </div>
@@ -191,9 +186,22 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   ))}
                 </div>
               ) : null}
-            </div>
+              <div className="rounded-2xl border border-slate-200 p-4">
+                <h2 className="text-sm font-semibold">Quick actions</h2>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button type="button" className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">♡ Favorite</button>
+                  <button type="button" className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">↗ Share</button>
+                  <a href="#offers" className="rounded-lg border border-slate-300 px-3 py-2 text-center text-sm font-medium text-slate-700 hover:bg-slate-50">⇄ Compare</a>
+                  {lowestOffer?.product_url ? <a href={lowestOffer.product_url} target="_blank" rel="noreferrer" className="rounded-lg bg-slate-900 px-3 py-2 text-center text-sm font-medium text-white hover:bg-slate-800">Best offer</a> : <a href="#specifications" className="rounded-lg border border-slate-300 px-3 py-2 text-center text-sm font-medium text-slate-700 hover:bg-slate-50">Specs</a>}
+                </div>
+              </div>
+            </aside>
 
             <div className="space-y-5 xl:pl-2">
+              <CategoryBreadcrumbs items={breadcrumbItems} />
+              <Link href={categoryPath.length ? `/categories/${categoryPath.map((c) => c.slug).join("/")}` : "/categories"} className="inline-block text-sm text-slate-600 hover:underline">
+                ← Back to {categoryPath.length ? categoryPath[categoryPath.length - 1].name : "products"}
+              </Link>
               {category ? <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{category.name}</p> : null}
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">{product.title}</h1>
               <p className="text-base leading-7 text-slate-600">{product.short_description || "No short description available."}</p>
@@ -210,82 +218,73 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 p-4">
-                <h2 className="text-sm font-semibold">Quick actions</h2>
-                <div className="mt-3 flex flex-wrap gap-3">
-                  {lowestOffer?.product_url ? <a href={lowestOffer.product_url} target="_blank" rel="noreferrer" className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">Visit lowest offer</a> : null}
-                  <a href="#offers" className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Compare offers</a>
-                  <a href="#specifications" className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">View specifications</a>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <section id="specifications" className="mt-12">
-            <h2 className="text-2xl font-semibold">Specifications</h2>
-            {!hasTemplate ? <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No specification template is attached to this product category yet.</p> : !hasAnySpecValues ? <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No specification values are available for this product yet.</p> : sortedGroups.length > 0 ? <div className="mt-5 grid gap-5 xl:grid-cols-2">{sortedGroups.map((group) => <div key={group.groupName} className="overflow-hidden rounded-xl border border-slate-200"><div className="border-b bg-slate-50 px-5 py-3 text-sm font-semibold">{group.groupName}</div><table className="min-w-full divide-y text-left text-sm"><tbody className="divide-y bg-white">{group.items.map((item) => <tr key={item.key}><th className="w-2/5 px-5 py-3 font-medium text-slate-600">{item.name}</th><td className="px-5 py-3 text-slate-900">{item.value}</td></tr>)}</tbody></table></div>)}</div> : <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">Specification fields exist, but saved values are empty.</p>}
-          </section>
-
-          <section id="offers" className="mt-12">
-            <h2 className="text-2xl font-semibold">Merchant offers</h2>
-            {offerRows.length > 0 ? (
-              <div className="mt-5 overflow-x-auto rounded-xl border">
-                <table className="min-w-[760px] w-full divide-y text-left text-sm">
-                  <thead className="bg-slate-50 text-slate-600">
-                    <tr>
-                      <th className="px-4 py-3 font-medium">Merchant</th>
-                      <th className="px-4 py-3 font-medium">Price</th>
-                      <th className="px-4 py-3 font-medium">Availability</th>
-                      <th className="px-4 py-3 font-medium">Updated</th>
-                      <th className="px-4 py-3 font-medium">Visit offer</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y bg-white">
-                    {offerRows.map((offer, index) => {
-                      const merchant = extractSingle(offer.merchants);
-                      return (
-                        <tr key={offer.id} className={index === 0 ? "bg-emerald-50/60" : ""}>
-                          <td className="px-4 py-3 font-medium">{merchant?.name ?? "Unknown merchant"}</td>
-                          <td className="px-4 py-3 font-semibold"><PriceText amountAMD={Number(offer.price)} /></td>
-                          <td className="px-4 py-3 text-slate-600">{stockLabel(offer.stock_status)}</td>
-                          <td className="px-4 py-3 text-slate-500">{new Date(offer.updated_at).toLocaleDateString()}</td>
-                          <td className="px-4 py-3">{offer.product_url ? <a href={offer.product_url} target="_blank" rel="noreferrer" className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Visit</a> : <span className="text-xs text-slate-400">N/A</span>}</td>
+              <section id="offers" className="mt-8">
+                <h2 className="text-2xl font-semibold">Merchant offers</h2>
+                {offerRows.length > 0 ? (
+                  <div className="mt-5 overflow-x-auto rounded-xl border">
+                    <table className="min-w-[760px] w-full divide-y text-left text-sm">
+                      <thead className="bg-slate-50 text-slate-600">
+                        <tr>
+                          <th className="px-4 py-3 font-medium">Merchant</th>
+                          <th className="px-4 py-3 font-medium">Price</th>
+                          <th className="px-4 py-3 font-medium">Availability</th>
+                          <th className="px-4 py-3 font-medium">Updated</th>
+                          <th className="px-4 py-3 font-medium">Visit offer</th>
                         </tr>
+                      </thead>
+                      <tbody className="divide-y bg-white">
+                        {offerRows.map((offer, index) => {
+                          const merchant = extractSingle(offer.merchants);
+                          return (
+                            <tr key={offer.id} className={index === 0 ? "bg-emerald-50/60" : ""}>
+                              <td className="px-4 py-3 font-medium">{merchant?.name ?? "Unknown merchant"}</td>
+                              <td className="px-4 py-3 font-semibold"><PriceText amountAMD={Number(offer.price)} /></td>
+                              <td className="px-4 py-3 text-slate-600">{stockLabel(offer.stock_status)}</td>
+                              <td className="px-4 py-3 text-slate-500">{new Date(offer.updated_at).toLocaleDateString()}</td>
+                              <td className="px-4 py-3">{offer.product_url ? <a href={offer.product_url} target="_blank" rel="noreferrer" className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Visit</a> : <span className="text-xs text-slate-400">N/A</span>}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No active offers yet.</p>}
+              </section>
+
+              <section id="specifications" className="mt-10">
+                <h2 className="text-2xl font-semibold">Specifications</h2>
+                {!hasTemplate ? <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No specification template is attached to this product category yet.</p> : !hasAnySpecValues ? <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No specification values are available for this product yet.</p> : sortedGroups.length > 0 ? <div className="mt-5 grid gap-5 xl:grid-cols-2">{sortedGroups.map((group) => <div key={group.groupName} className="overflow-hidden rounded-xl border border-slate-200"><div className="border-b bg-slate-50 px-5 py-3 text-sm font-semibold">{group.groupName}</div><table className="min-w-full divide-y text-left text-sm"><tbody className="divide-y bg-white">{group.items.map((item) => <tr key={item.key}><th className="w-2/5 px-5 py-3 font-medium text-slate-600">{item.name}</th><td className="px-5 py-3 text-slate-900">{item.value}</td></tr>)}</tbody></table></div>)}</div> : <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">Specification fields exist, but saved values are empty.</p>}
+              </section>
+
+              <section className="mt-10">
+                <h2 className="text-2xl font-semibold">Description</h2>
+                <div className="mt-4 rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
+                  <div className="max-w-5xl whitespace-pre-wrap text-[15px] leading-7 text-slate-700">{product.long_description || product.description || "Detailed description is not available yet."}</div>
+                </div>
+              </section>
+
+              <section className="mt-10">
+                <h2 className="text-2xl font-semibold">Related products</h2>
+                {relatedProducts && relatedProducts.length > 0 ? (
+                  <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {relatedProducts.map((related) => {
+                      const relatedImages = Array.isArray(related.images) ? related.images.filter((v): v is string => typeof v === "string" && Boolean(v.trim())) : [];
+                      return (
+                        <Link key={related.id} href={`/products/${related.slug}`} className="overflow-hidden rounded-xl border border-slate-200 transition hover:shadow-md">
+                          <div className="aspect-[4/3] bg-[#f6f6f6] p-3">
+                            {relatedImages[0] ? <img src={relatedImages[0]} alt={related.title} className="h-full w-full object-contain mix-blend-multiply" /> : <div className="flex h-full items-center justify-center text-sm text-slate-400">No image</div>}
+                          </div>
+                          <div className="p-4">
+                            <p className="line-clamp-2 text-sm font-medium text-slate-900">{related.title}</p>
+                          </div>
+                        </Link>
                       );
                     })}
-                  </tbody>
-                </table>
-              </div>
-            ) : <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No active offers yet.</p>}
-          </section>
-
-          <section className="mt-12">
-            <h2 className="text-2xl font-semibold">Description</h2>
-            <div className="mt-4 rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-              <div className="max-w-5xl whitespace-pre-wrap text-[15px] leading-7 text-slate-700">{product.long_description || product.description || "Detailed description is not available yet."}</div>
+                  </div>
+                ) : <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No related products available.</p>}
+              </section>
             </div>
-          </section>
-
-          <section className="mt-12">
-            <h2 className="text-2xl font-semibold">Related products</h2>
-            {relatedProducts && relatedProducts.length > 0 ? (
-              <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {relatedProducts.map((related) => {
-                  const relatedImages = Array.isArray(related.images) ? related.images.filter((v): v is string => typeof v === "string" && Boolean(v.trim())) : [];
-                  return (
-                    <Link key={related.id} href={`/products/${related.slug}`} className="overflow-hidden rounded-xl border border-slate-200 transition hover:shadow-md">
-                      <div className="aspect-[4/3] bg-[#f6f6f6] p-3">
-                        {relatedImages[0] ? <img src={relatedImages[0]} alt={related.title} className="h-full w-full object-contain mix-blend-multiply" /> : <div className="flex h-full items-center justify-center text-sm text-slate-400">No image</div>}
-                      </div>
-                      <div className="p-4">
-                        <p className="line-clamp-2 text-sm font-medium text-slate-900">{related.title}</p>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            ) : <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No related products available.</p>}
-          </section>
+          </article>
         </div>
       </section>
 
