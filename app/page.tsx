@@ -49,7 +49,7 @@ export default async function HomePage() {
                     <img
                       src={category.image_url}
                       alt={category.name}
-                      className="h-full w-full object-contain mix-blend-multiply contrast-125 brightness-105"
+                      className="h-full w-full object-contain mix-blend-multiply contrast-108 brightness-102"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center rounded-md border border-slate-700 text-xs text-slate-300">
