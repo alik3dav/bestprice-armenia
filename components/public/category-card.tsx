@@ -1,8 +1,9 @@
 import Link from "next/link";
+import type { ComponentProps } from "react";
 
 type CategoryCardProps = {
   name: string;
-  href: string;
+  href: ComponentProps<typeof Link>["href"];
   imageUrl?: string | null;
 };
 
