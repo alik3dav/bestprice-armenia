@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import { PublicHeader } from "@/components/public/public-header";
 import { PublicFooter } from "@/components/public/public-footer";
 import { LatestProductsSection, LatestProductsSkeleton } from "@/components/public/latest-products-section";
+import { CategoryCard } from "@/components/public/category-card";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -46,22 +46,12 @@ export default async function HomePage() {
         {categories.length > 0 ? (
           <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
             {categories.map((category) => (
-              <Link key={category.id} href={`/categories/${category.slug}`} className="group rounded-xl  bg-[#f6f6f6] p-2 transition hover:border-slate-300 ">
-                <div className="aspect-[4/3] w-full rounded-lg p-3">
-                  {category.image_url ? (
-                    <img
-                      src={category.image_url}
-                      alt={category.name}
-                      className="h-full w-full object-contain mix-blend-multiply contrast-108 brightness-102"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center rounded-md border border-slate-700 text-xs text-slate-300">
-                      No image
-                    </div>
-                  )}
-                </div>
-                <p className="mt-2 line-clamp-2 text-center text-sm font-medium text-slate-900">{category.name}</p>
-              </Link>
+              <CategoryCard
+                key={category.id}
+                name={category.name}
+                href={`/categories/${category.slug}`}
+                imageUrl={category.image_url}
+              />
             ))}
           </div>
         ) : (
