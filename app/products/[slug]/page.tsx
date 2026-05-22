@@ -33,7 +33,7 @@ type OfferRow = {
   stock_status: "in_stock" | "limited" | "out_of_stock" | "preorder";
   product_url: string | null;
   updated_at: string;
-  merchants: { name: string; slug: string } | { name: string; slug: string }[] | null;
+  merchants: { name: string; slug: string; logo_path?: string | null } | { name: string; slug: string; logo_path?: string | null }[] | null;
 };
 
 function hasSupabaseEnv() { return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY); }
@@ -67,6 +67,19 @@ function getOfferCountText(count: number) {
   return `${count} խանութ${count === 1 ? "ում" : "ներում"}`;
 }
 
+
+function merchantInitials(name: string | undefined) {
+  const value = (name ?? "Merchant").trim();
+  return value.split(/\s+/).slice(0, 2).map((x) => x[0]?.toUpperCase() ?? "").join("") || "M";
+}
+
+function merchantLogoUrl(path: string | null | undefined) {
+  if (!path) return null;
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!base) return null;
+  const bucket = process.env.NEXT_PUBLIC_SUPABASE_MERCHANT_LOGOS_BUCKET ?? "merchant-logos";
+  return `${base}/storage/v1/object/public/${bucket}/${path}`;
+}
 async function getProductBySlug(slug: string) {
   const supabase = await createClient();
   const { data: product, error } = await supabase
@@ -115,7 +128,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
   const [{ data: template, error: templateErr }, { data: specValues, error: valuesErr }, { data: offers, error: offersErr }, { data: relatedProducts, error: relatedErr }] = await Promise.all([
     supabase.from("specification_groups").select("id,name,category_id").eq("category_id", product.category_id).maybeSingle(),
     supabase.from("product_specification_values").select("field_id,value_text,value_number,value_boolean,value_select").eq("product_id", product.id),
-    supabase.from("product_offers").select("id,price,currency,stock_status,product_url,updated_at,merchants(name,slug)").eq("product_id", product.id).eq("status", "active").order("price", { ascending: true }),
+    supabase.from("product_offers").select("id,price,currency,stock_status,product_url,updated_at,merchants(name,slug,logo_path)").eq("product_id", product.id).eq("status", "active").order("price", { ascending: true }),
     supabase.from("products").select("id,title,slug,images").eq("status", "active").eq("category_id", product.category_id).neq("id", product.id).limit(8),
   ]);
   devLog("load-template", templateErr); devLog("load-spec-values", valuesErr); devLog("load-offers", offersErr); devLog("load-related", relatedErr);
@@ -232,7 +245,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                           const merchant = extractSingle(offer.merchants);
                           return (
                             <tr key={offer.id} className={index === 0 ? "bg-emerald-50/60" : ""}>
-                              <td className="px-4 py-3 font-medium">{merchant?.name ?? "Unknown merchant"}</td>
+                              <td className="px-4 py-3 font-medium"><div className="flex items-center gap-2"><div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border bg-slate-50 text-[10px] font-semibold text-slate-600">{merchantLogoUrl(merchant?.logo_path) ? <img src={merchantLogoUrl(merchant?.logo_path) ?? ""} alt={`${merchant?.name ?? "Merchant"} logo`} className="h-full w-full object-contain" /> : <span>{merchantInitials(merchant?.name)}</span>}</div><span>{merchant?.name ?? "Unknown merchant"}</span></div></td>
                               <td className="px-4 py-3 font-semibold"><PriceText amountAMD={Number(offer.price)} /></td>
                               <td className="px-4 py-3 text-slate-600">{stockLabel(offer.stock_status)}</td>
                               <td className="px-4 py-3 text-slate-500">{new Date(offer.updated_at).toLocaleDateString()}</td>

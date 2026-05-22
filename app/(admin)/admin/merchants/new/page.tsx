@@ -7,7 +7,8 @@ import { requireAdmin } from "@/lib/auth/guards";
 const createMerchantSchema = z.object({
   companyName: z.string().trim().min(2),
   slug: z.string().trim().min(2).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-  status: z.enum(["draft", "active", "archived"])
+  status: z.enum(["draft", "active", "archived"]),
+  logoPath: z.string().trim().optional()
 });
 
 export default async function NewMerchantPage({ searchParams }: { searchParams?: Promise<{ error?: string; success?: string }> }) {
@@ -23,12 +24,13 @@ export default async function NewMerchantPage({ searchParams }: { searchParams?:
     const { error } = await supabase.from("merchants").insert({
       name: parsed.data.companyName,
       slug: parsed.data.slug,
-      status: parsed.data.status
+      status: parsed.data.status,
+      logo_path: parsed.data.logoPath?.trim() || null,
     });
 
     if (error) redirect(`/admin/merchants/new?error=${encodeURIComponent(error.message)}`);
     redirect("/admin/merchants");
   }
 
-  return <section className="space-y-4 rounded border bg-white p-4"><div className="flex items-center justify-between gap-3"><div><h1 className="text-xl font-semibold">Create Merchant</h1><p className="text-sm text-slate-500">Create a merchant/company record only.</p></div><Link href="/admin/merchants" className="rounded border px-3 py-2 text-sm hover:bg-slate-50">Back to merchants</Link></div>{params?.error ? <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{params.error}</div> : null}<MerchantForm action={createMerchant} backHref="/admin/merchants" submitLabel="Create merchant" submitLoadingLabel="Creating..." defaultValues={{ companyName: "", slug: "", status: "draft" }} /></section>;
+  return <section className="space-y-4 rounded border bg-white p-4"><div className="flex items-center justify-between gap-3"><div><h1 className="text-xl font-semibold">Create Merchant</h1><p className="text-sm text-slate-500">Create a merchant/company record only.</p></div><Link href="/admin/merchants" className="rounded border px-3 py-2 text-sm hover:bg-slate-50">Back to merchants</Link></div>{params?.error ? <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{params.error}</div> : null}<MerchantForm action={createMerchant} backHref="/admin/merchants" submitLabel="Create merchant" submitLoadingLabel="Creating..." defaultValues={{ companyName: "", slug: "", status: "draft", logoPath: "" }} /></section>;
 }
