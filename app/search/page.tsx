@@ -84,7 +84,7 @@ export default async function SearchPage({ searchParams }: { searchParams?: Prom
             {mergedProducts.map((product: SearchProduct) => {
               const offers = offersByProduct.get(product.id) ?? [];
               const lowest = offers.reduce((min, offer) => (min === null || offer.price < min ? offer.price : min), null as number | null);
-              return <ProductGridCard key={product.id} product={product} lowestPriceAMD={lowest} />;
+              return <ProductGridCard key={product.id} product={product} lowestPriceAMD={lowest} activeOfferCount={offers.length} />;
             })}
           </div>
         ) : null}

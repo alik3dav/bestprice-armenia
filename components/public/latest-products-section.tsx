@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { PriceText } from "@/components/public/price-text";
+import { ProductGridCard } from "@/components/public/product-grid-card";
 
 type ProductRow = {
   id: string;
   slug: string;
   title: string;
-  short_description: string | null;
-  description: string | null;
   images: unknown;
 };
 
@@ -24,7 +22,7 @@ export async function LatestProductsSection() {
     const supabase = await createClient();
     const { data: productsData, error: productsError } = await supabase
       .from("products")
-      .select("id,slug,title,short_description,description,images")
+      .select("id,slug,title,images")
       .eq("status", "active")
       .order("created_at", { ascending: false })
       .limit(LATEST_PRODUCTS_LIMIT);
@@ -47,11 +45,13 @@ export async function LatestProductsSection() {
       .in("product_id", productIds);
 
     const lowestOfferByProduct = new Map<string, OfferRow>();
+    const offerCountByProduct = new Map<string, number>();
     for (const offer of (offersData ?? []) as OfferRow[]) {
       const current = lowestOfferByProduct.get(offer.product_id);
       if (!current || Number(offer.price) < Number(current.price)) {
         lowestOfferByProduct.set(offer.product_id, offer);
       }
+      offerCountByProduct.set(offer.product_id, (offerCountByProduct.get(offer.product_id) ?? 0) + 1);
     }
 
     return (
@@ -67,37 +67,16 @@ export async function LatestProductsSection() {
           <div className="flex min-w-max gap-4">
             {products.map((product) => {
               const lowest = lowestOfferByProduct.get(product.id);
-              const image = Array.isArray(product.images) ? product.images[0] : null;
+              const offerCount = offerCountByProduct.get(product.id) ?? 0;
 
               return (
-                <Link href={`/products/${product.slug}`} key={product.id} className="group block w-[220px] shrink-0 p-2 transition sm:w-[240px]">
-                  <article>
-                    <div className="relative aspect-square rounded-xl bg-[#f6f6f6] p-3">
-                      {typeof image === "string" && image ? (
-                        <img
-                          src={image}
-                          alt={product.title}
-                          loading="lazy"
-                          decoding="async"
-                          className="h-full w-full object-contain mix-blend-multiply contrast-108 brightness-102"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">Նկար չկա</div>
-                      )}
-                    </div>
-                    <div className="space-y-1 px-1 pb-1 pt-3">
-                      <h3 className="line-clamp-2 text-[15px] font-bold leading-5 text-black">{product.title}</h3>
-                      <p className="line-clamp-2 text-[13px] leading-5 text-slate-500">{product.short_description || product.description || "Կարճ նկարագրություն հասանելի չէ։"}</p>
-                      <div className="pt-1">
-                        {lowest ? (
-                          <p className="text-[20px] font-bold leading-6 text-black"><PriceText amountAMD={Number(lowest.price)} /></p>
-                        ) : (
-                          <p className="text-[20px] font-bold leading-6 text-slate-300">—</p>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                </Link>
+                <ProductGridCard
+                  key={product.id}
+                  product={product}
+                  lowestPriceAMD={lowest ? Number(lowest.price) : null}
+                  activeOfferCount={offerCount}
+                  widthClassName="w-[220px] shrink-0 sm:w-[240px]"
+                />
               );
             })}
           </div>
