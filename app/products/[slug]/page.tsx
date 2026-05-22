@@ -262,7 +262,26 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
               <section id="specifications" className="mt-10">
                 <h2 className="text-2xl font-semibold">Specifications</h2>
-                {!hasTemplate ? <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No specification template is attached to this product category yet.</p> : !hasAnySpecValues ? <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No specification values are available for this product yet.</p> : sortedGroups.length > 0 ? <div className="mt-5 grid gap-5 xl:grid-cols-2">{sortedGroups.map((group) => <div key={group.groupName} className="overflow-hidden rounded-xl border border-slate-200"><div className="border-b bg-slate-50 px-5 py-3 text-sm font-semibold">{group.groupName}</div><table className="min-w-full divide-y text-left text-sm"><tbody className="divide-y bg-white">{group.items.map((item) => <tr key={item.key}><th className="w-2/5 px-5 py-3 font-medium text-slate-600">{item.name}</th><td className="px-5 py-3 text-slate-900">{item.value}</td></tr>)}</tbody></table></div>)}</div> : <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">Specification fields exist, but saved values are empty.</p>}
+                {!hasTemplate ? <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No specification template is attached to this product category yet.</p> : !hasAnySpecValues ? <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No specification values are available for this product yet.</p> : sortedGroups.length > 0 ? (
+                  <div className="mt-7 space-y-8">
+                    {sortedGroups.map((group) => (
+                      <div key={group.groupName}>
+                        <h3 className="text-lg font-semibold tracking-tight text-slate-900 sm:text-xl">{group.groupName}</h3>
+                        <div className="mt-4 space-y-1.5">
+                          {group.items.map((item) => (
+                            <div key={item.key} className="py-2 sm:py-2.5">
+                              <div className="flex flex-col gap-1.5 sm:flex-row sm:items-baseline sm:gap-4">
+                                <p className="text-sm font-medium text-slate-500 sm:w-[38%] sm:min-w-[220px]">{item.name}</p>
+                                <div aria-hidden="true" className="hidden h-px flex-1 bg-slate-200/90 sm:block" />
+                                <p className="text-sm font-semibold text-slate-900 sm:w-[34%] sm:text-right">{item.value}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">Specification fields exist, but saved values are empty.</p>}
               </section>
 
               <section className="mt-10">
