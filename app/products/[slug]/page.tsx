@@ -267,8 +267,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
                       const relatedImages = Array.isArray(related.images) ? related.images.filter((v): v is string => typeof v === "string" && Boolean(v.trim())) : [];
                       return (
                         <Link key={related.id} href={`/products/${related.slug}`} className="overflow-hidden rounded-xl border border-slate-200 transition hover:shadow-md">
-                          <div className="aspect-[4/3] bg-[#f6f6f6] p-3">
-                            {relatedImages[0] ? <img src={relatedImages[0]} alt={related.title} className="h-full w-full object-contain mix-blend-multiply" /> : <div className="flex h-full items-center justify-center text-sm text-slate-400">No image</div>}
+                          <div className="aspect-square overflow-hidden bg-[#f6f6f6] p-3">
+                            {relatedImages[0] ? <img src={relatedImages[0]} alt={related.title} className="h-full w-full object-contain object-center mix-blend-multiply" /> : <div className="flex h-full items-center justify-center text-sm text-slate-400">No image</div>}
                           </div>
                           <div className="p-4">
                             <p className="line-clamp-2 text-sm font-medium text-slate-900">{related.title}</p>
