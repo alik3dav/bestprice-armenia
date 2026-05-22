@@ -212,9 +212,31 @@ export default async function ProductDetailPage({ params }: PageProps) {
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">{product.title}</h1>
               <p className="text-base leading-7 text-slate-600">{product.short_description || "No short description available."}</p>
 
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs uppercase tracking-wide text-slate-500">Lowest active offer</p>
-                {lowestOffer ? <p className="mt-1 text-3xl font-bold"><PriceText amountAMD={Number(lowestOffer.price)} /></p> : <p className="mt-1 text-sm text-slate-500">No active offers available right now.</p>}
+              <div className="rounded-2xl bg-gradient-to-br from-slate-50 to-white p-4 shadow-sm ring-1 ring-slate-200/70 sm:p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Լավագույն առաջարկ</p>
+                {lowestOffer ? (() => {
+                  const lowestMerchant = extractSingle(lowestOffer.merchants);
+                  const lowestMerchantLogo = merchantLogoUrl(lowestMerchant?.logo_path);
+                  return (
+                    <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex h-14 w-16 shrink-0 items-center justify-center rounded-xl bg-white p-2 ring-1 ring-slate-200">
+                          {lowestMerchantLogo ? <img src={lowestMerchantLogo} alt={`${lowestMerchant?.name ?? "Merchant"} logo`} className="h-full w-full object-contain object-center" /> : <span className="text-sm font-semibold text-slate-600">{merchantInitials(lowestMerchant?.name)}</span>}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-slate-900">{lowestMerchant?.name ?? "Unknown merchant"}</p>
+                          <p className="mt-0.5 text-2xl font-bold leading-none text-slate-950"><PriceText amountAMD={Number(lowestOffer.price)} /></p>
+                        </div>
+                      </div>
+
+                      {lowestOffer.product_url ? (
+                        <a href={lowestOffer.product_url} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition duration-200 hover:bg-slate-800">
+                          Տեսնել առաջարկը
+                        </a>
+                      ) : null}
+                    </div>
+                  );
+                })() : <p className="mt-1 text-sm text-slate-500">No active offers available right now.</p>}
               </div>
 
               <section id="offers" className="mt-8">
