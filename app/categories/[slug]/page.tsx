@@ -1,6 +1,5 @@
 // @ts-nocheck
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PublicHeader } from "@/components/public/public-header";
 import { PublicFooter } from "@/components/public/public-footer";
@@ -8,6 +7,7 @@ import { ShopFilters } from "@/components/public/shop-filters";
 import { createClient } from "@/lib/supabase/server";
 import { ProductGridCard } from "@/components/public/product-grid-card";
 import { slugify } from "@/lib/slug";
+import { CategoryCard } from "@/components/public/category-card";
 import { CategoryBreadcrumbs, breadcrumbJsonLd } from "@/components/public/category-breadcrumbs";
 import { EmptyState, ErrorState } from "@/components/public/state-messages";
 
@@ -48,6 +48,14 @@ export default async function CategoryPage({ params, searchParams }) {
 
   if (!category) return notFound();
 
+  const { data: childCategories } = await supabase
+    .from("categories")
+    .select("id,name,slug,image_url,parent_id")
+    .eq("parent_id", category.id)
+    .eq("status", "active")
+    .order("name", { ascending: true });
+
+  const hasChildren = (childCategories ?? []).length > 0;
 
   const { data: categoriesForPath } = await supabase.from("categories").select("id,name,slug,parent_id").eq("status", "active");
   const byId = new Map((categoriesForPath ?? []).map((c) => [c.id, c]));
@@ -84,14 +92,18 @@ export default async function CategoryPage({ params, searchParams }) {
   const products = productsData ?? [];
   const productIds = products.map((p) => p.id);
 
-  const [{ data: offersData, error: offersError }, { data: fieldsData }, { data: specValuesData }] = await Promise.all([
+  const [{ data: offersData, error: offersError }, templateResult, templateGroupsResult, { data: fieldsData }, { data: specValuesData }] = await Promise.all([
     productIds.length ? supabase.from("product_offers").select("product_id,price,currency,merchant_id,stock_status").eq("status", "active").in("product_id", productIds) : Promise.resolve({ data: [], error: null }),
-    supabase.from("specification_fields").select("id,name,key,template_group_id,specification_template_groups(name)").order("sort_order", { ascending: true }),
+    supabase.from("specification_groups").select("id").eq("category_id", category.id).maybeSingle(),
+    supabase.from("specification_template_groups").select("id,template_id"),
+    supabase.from("specification_fields").select("id,name,key,template_group_id,specification_template_groups(name),sort_order").order("sort_order", { ascending: true }),
     productIds.length ? supabase.from("product_specification_values").select("product_id,field_id,value_text,value_number,value_boolean,value_select").in("product_id", productIds) : Promise.resolve({ data: [] }),
   ]);
 
   const offers = offersData ?? [];
-  const fields = (fieldsData ?? []).filter((f) => f.specification_template_groups);
+  const activeTemplateId = templateResult.data?.id ?? null;
+  const validGroupIds = new Set((templateGroupsResult.data ?? []).filter((g) => g.template_id === activeTemplateId).map((g) => g.id));
+  const fields = (fieldsData ?? []).filter((f) => f.specification_template_groups && validGroupIds.has(f.template_group_id));
   const fieldIds = new Set(fields.map((f) => f.id));
   const specValues = (specValuesData ?? []).filter((v) => fieldIds.has(v.field_id));
 
@@ -145,10 +157,23 @@ export default async function CategoryPage({ params, searchParams }) {
   const hasAnyFilters = merchants.length > 0 || stock.length > 0 || selectedSpecKeys.length > 0 || min !== null || max !== null;
 
   return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={userEmail} />
-    <section className="w-full px-4 py-6 sm:px-6 lg:px-8"><div className="mx-auto w-full max-w-[1600px]"><CategoryBreadcrumbs items={breadcrumbItems} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} /><div className="mb-5 flex items-center justify-between"><h1 className="text-2xl font-semibold">{category.name}</h1><Link href="/" className="text-sm text-slate-600 hover:underline">Back to landing</Link></div>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"><aside className="lg:pr-6"><div className="sticky top-20"><ShopFilters params={queryParams} merchantIds={Array.from(new Set(offers.map((o) => o.merchant_id)))} specFilters={specFilters} /></div></aside>
-      <div>{productsError ? <ErrorState>Failed to load products.</ErrorState> : null}
-      {products.length === 0 ? <EmptyState className="p-8">No products in this category yet.</EmptyState> : sorted.length === 0 && hasAnyFilters ? <EmptyState className="p-8">Products exist, but no results match the selected filters.</EmptyState> : sorted.length === 0 ? <EmptyState className="p-8">No products found for selected filters.</EmptyState> : <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{sorted.map((p) => { const po = offersByProduct.get(p.id) ?? []; const lowest = po.reduce((m, o) => (!m || o.price < m.price ? o : m), null); return <ProductGridCard key={p.id} product={p} lowestPriceAMD={lowest ? Number(lowest.price) : null} activeOfferCount={po.length} />; })}</div>}</div></div>
+    <section className="w-full px-4 py-6 sm:px-6 lg:px-8"><div className="mx-auto w-full max-w-[1600px]"><CategoryBreadcrumbs items={breadcrumbItems} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} /><div className="mb-5"><h1 className="text-2xl font-semibold">{category.name}</h1></div>
+      {hasChildren ? (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          {(childCategories ?? []).map((child) => (
+            <CategoryCard
+              key={child.id}
+              name={child.name}
+              href={`/categories/${[...path.map((x) => x.slug), child.slug].join("/")}`}
+              imageUrl={child.image_url}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"><aside className="lg:pr-6"><div className="sticky top-20"><ShopFilters params={queryParams} merchantIds={Array.from(new Set(offers.map((o) => o.merchant_id)))} specFilters={specFilters} /></div></aside>
+        <div>{productsError ? <ErrorState>Failed to load products.</ErrorState> : null}
+        {products.length === 0 ? <EmptyState className="p-8">No products in this category yet.</EmptyState> : sorted.length === 0 && hasAnyFilters ? <EmptyState className="p-8">Products exist, but no results match the selected filters.</EmptyState> : sorted.length === 0 ? <EmptyState className="p-8">No products found for selected filters.</EmptyState> : <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{sorted.map((p) => { const po = offersByProduct.get(p.id) ?? []; const lowest = po.reduce((m, o) => (!m || o.price < m.price ? o : m), null); return <ProductGridCard key={p.id} product={p} lowestPriceAMD={lowest ? Number(lowest.price) : null} activeOfferCount={po.length} />; })}</div>}</div></div>
+      )}
     </div></section>      <PublicFooter />
     </main>;
 }
