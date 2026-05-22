@@ -25,7 +25,7 @@ export function ProductGridCard({ product, lowestPriceAMD, activeOfferCount = 0,
   return (
     <Link href={`/products/${product.slug}`} className={`group block p-2 transition ${widthClassName ?? ""}`.trim()}>
       <article className="flex h-full flex-col">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-[#f6f6f6] p-5">
+        <div className="relative aspect-square overflow-hidden rounded-xl bg-[#f6f6f6] p-5">
           <button
             type="button"
             title="Ավելացնել ընտրյալներում"
@@ -44,7 +44,7 @@ export function ProductGridCard({ product, lowestPriceAMD, activeOfferCount = 0,
               <img
                 src={String(image)}
                 alt={product.title}
-                className="max-h-full max-w-full object-contain mix-blend-multiply contrast-108 brightness-102"
+                className="h-full w-full object-contain object-center mix-blend-multiply contrast-108 brightness-102"
               />
             </div>
           ) : (
