@@ -63,6 +63,10 @@ function stockLabel(stock: OfferRow["stock_status"]) {
   return "Out of stock";
 }
 
+function getOfferCountText(count: number) {
+  return `${count} խանութ${count === 1 ? "ում" : "ներում"}`;
+}
+
 async function getProductBySlug(slug: string) {
   const supabase = await createClient();
   const { data: product, error } = await supabase
@@ -202,22 +206,17 @@ export default async function ProductDetailPage({ params }: PageProps) {
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">{product.title}</h1>
               <p className="text-base leading-7 text-slate-600">{product.short_description || "No short description available."}</p>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-xs uppercase tracking-wide text-slate-500">Lowest active offer</p>
-                  {lowestOffer ? <p className="mt-1 text-3xl font-bold"><PriceText amountAMD={Number(lowestOffer.price)} /></p> : <p className="mt-1 text-sm text-slate-500">No active offers available right now.</p>}
-                </div>
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-xs uppercase tracking-wide text-slate-500">Offer summary</p>
-                  <p className="mt-1 text-2xl font-semibold">{offerRows.length} merchants</p>
-                  <p className="mt-1 text-sm text-slate-600">{offerRows.length > 0 ? `From ${stockLabel(offerRows[0].stock_status).toLowerCase()} sellers` : "No active offers yet."}</p>
-                </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-wide text-slate-500">Lowest active offer</p>
+                {lowestOffer ? <p className="mt-1 text-3xl font-bold"><PriceText amountAMD={Number(lowestOffer.price)} /></p> : <p className="mt-1 text-sm text-slate-500">No active offers available right now.</p>}
               </div>
 
               <section id="offers" className="mt-8">
                 <h2 className="text-2xl font-semibold">Merchant offers</h2>
                 {offerRows.length > 0 ? (
-                  <div className="mt-5 overflow-x-auto rounded-xl border">
+                  <>
+                    <p className="mt-3 text-sm text-slate-600">{getOfferCountText(offerRows.length)}</p>
+                    <div className="mt-3 overflow-x-auto rounded-xl border">
                     <table className="min-w-[760px] w-full divide-y text-left text-sm">
                       <thead className="bg-slate-50 text-slate-600">
                         <tr>
@@ -243,7 +242,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
                         })}
                       </tbody>
                     </table>
-                  </div>
+                    </div>
+                  </>
                 ) : <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No active offers yet.</p>}
               </section>
 
