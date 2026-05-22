@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PublicFooter } from "@/components/public/public-footer";
 import { PublicHeader } from "@/components/public/public-header";
 import { ProductGridCard } from "@/components/public/product-grid-card";
+import { EmptyState, ErrorState } from "@/components/public/state-messages";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -23,7 +24,7 @@ export default async function SearchPage({ searchParams }: { searchParams?: Prom
   const userEmail = authResult.data.user?.email ?? null;
 
   if (!query) {
-    return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={userEmail} /><section className="w-full px-4 py-8 sm:px-6 lg:px-10"><h1 className="text-2xl font-semibold">Որոնման արդյունքներ</h1><p className="mt-4 rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">Մուտքագրեք որոնման բառը վերևի դաշտում։</p></section><PublicFooter /></main>;
+    return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={userEmail} /><section className="w-full px-4 py-8 sm:px-6 lg:px-10"><h1 className="text-2xl font-semibold">Որոնման արդյունքներ</h1><EmptyState className="mt-4 p-8">Մուտքագրեք որոնման բառը վերևի դաշտում։</EmptyState></section><PublicFooter /></main>;
   }
 
   const searchPattern = `%${query}%`;
@@ -75,9 +76,9 @@ export default async function SearchPage({ searchParams }: { searchParams?: Prom
         <h1 className="text-2xl font-semibold">Որոնման արդյունքներ</h1>
         <p className="mt-1 text-sm text-slate-500">"{query}" — {mergedProducts.length} արդյունք</p>
 
-        {productsError || offersError ? <p className="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">Չհաջողվեց բեռնել որոնման արդյունքները։</p> : null}
+        {productsError || offersError ? <ErrorState className="mt-5">Չհաջողվեց բեռնել որոնման արդյունքները։</ErrorState> : null}
 
-        {!productsError && mergedProducts.length === 0 ? <p className="mt-5 rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">Ձեր որոնմամբ ապրանքներ չգտնվեցին։</p> : null}
+        {!productsError && mergedProducts.length === 0 ? <EmptyState className="mt-5 p-8">Ձեր որոնմամբ ապրանքներ չգտնվեցին։</EmptyState> : null}
 
         {!productsError && mergedProducts.length > 0 ? (
           <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
