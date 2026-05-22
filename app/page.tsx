@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import { Suspense } from "react";
 import { PublicHeader } from "@/components/public/public-header";
 import { PublicFooter } from "@/components/public/public-footer";
@@ -49,7 +49,7 @@ export default async function HomePage() {
               <CategoryCard
                 key={category.id}
                 name={category.name}
-                href={`/categories/${category.slug}`}
+                href={`/categories/${category.slug}` as Route}
                 imageUrl={category.image_url}
               />
             ))}
