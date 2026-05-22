@@ -56,13 +56,6 @@ function formatSpecValue(value: Pick<SpecValueRow, "value_text" | "value_number"
   return trimmed;
 }
 
-function stockLabel(stock: OfferRow["stock_status"]) {
-  if (stock === "in_stock") return "In stock";
-  if (stock === "limited") return "Limited";
-  if (stock === "preorder") return "Preorder";
-  return "Out of stock";
-}
-
 function getOfferCountText(count: number) {
   return `${count} խանութ${count === 1 ? "ում" : "ներում"}`;
 }
@@ -229,32 +222,30 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 {offerRows.length > 0 ? (
                   <>
                     <p className="mt-3 text-sm text-slate-600">{getOfferCountText(offerRows.length)}</p>
-                    <div className="mt-3 overflow-x-auto rounded-xl border">
-                    <table className="min-w-[760px] w-full divide-y text-left text-sm">
-                      <thead className="bg-slate-50 text-slate-600">
-                        <tr>
-                          <th className="px-4 py-3 font-medium">Merchant</th>
-                          <th className="px-4 py-3 font-medium">Price</th>
-                          <th className="px-4 py-3 font-medium">Availability</th>
-                          <th className="px-4 py-3 font-medium">Updated</th>
-                          <th className="px-4 py-3 font-medium">Visit offer</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y bg-white">
-                        {offerRows.map((offer, index) => {
-                          const merchant = extractSingle(offer.merchants);
-                          return (
-                            <tr key={offer.id} className={index === 0 ? "bg-emerald-50/60" : ""}>
-                              <td className="px-4 py-3 font-medium"><div className="flex items-center gap-2"><div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border bg-slate-50 text-[10px] font-semibold text-slate-600">{merchantLogoUrl(merchant?.logo_path) ? <img src={merchantLogoUrl(merchant?.logo_path) ?? ""} alt={`${merchant?.name ?? "Merchant"} logo`} className="h-full w-full object-contain" /> : <span>{merchantInitials(merchant?.name)}</span>}</div><span>{merchant?.name ?? "Unknown merchant"}</span></div></td>
-                              <td className="px-4 py-3 font-semibold"><PriceText amountAMD={Number(offer.price)} /></td>
-                              <td className="px-4 py-3 text-slate-600">{stockLabel(offer.stock_status)}</td>
-                              <td className="px-4 py-3 text-slate-500">{new Date(offer.updated_at).toLocaleDateString()}</td>
-                              <td className="px-4 py-3">{offer.product_url ? <a href={offer.product_url} target="_blank" rel="noreferrer" className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Visit</a> : <span className="text-xs text-slate-400">N/A</span>}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                    <div className="mt-4 space-y-2.5">
+                      {offerRows.map((offer) => {
+                        const merchant = extractSingle(offer.merchants);
+                        const logo = merchantLogoUrl(merchant?.logo_path);
+                        return (
+                          <article key={offer.id} className="group rounded-2xl bg-slate-50/90 px-3.5 py-3 transition duration-200 hover:bg-white hover:shadow-sm sm:px-4">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                              <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white p-2">
+                                {logo ? <img src={logo} alt={`${merchant?.name ?? "Merchant"} logo`} className="h-full w-full object-contain object-center" /> : <span className="text-xs font-semibold text-slate-600">{merchantInitials(merchant?.name)}</span>}
+                              </div>
+
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-[15px] font-semibold text-slate-900">{merchant?.name ?? "Unknown merchant"}</p>
+                                {merchant?.slug ? <p className="mt-0.5 text-xs text-slate-500">{merchant.slug}</p> : null}
+                              </div>
+
+                              <div className="flex flex-col gap-2 sm:items-end">
+                                <p className="text-2xl font-bold leading-none text-slate-950 sm:text-[30px]"><PriceText amountAMD={Number(offer.price)} /></p>
+                                {offer.product_url ? <a href={offer.product_url} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition duration-200 hover:bg-slate-800 sm:text-sm">Տեսնել առաջարկը</a> : <span className="text-xs text-slate-400">N/A</span>}
+                              </div>
+                            </div>
+                          </article>
+                        );
+                      })}
                     </div>
                   </>
                 ) : <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No active offers yet.</p>}
