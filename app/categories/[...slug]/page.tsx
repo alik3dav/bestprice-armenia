@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { ProductGridCard } from "@/components/public/product-grid-card";
 import { PublicHeader } from "@/components/public/public-header";
 import { PublicFooter } from "@/components/public/public-footer";
 import { createClient } from "@/lib/supabase/server";
@@ -40,7 +41,12 @@ export default async function CategoryHierarchyPage({ params }: any) {
   if (children.length) return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={userEmail} /><section className="mx-auto w-full max-w-7xl p-6"><CategoryBreadcrumbs items={breadcrumbItems} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} /><h1 className="text-2xl font-semibold">{current!.name}</h1><div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">{children.map((child) => <Link key={child.id} href={`/categories/${[...segments, child.slug].join("/")}`} className="rounded-xl bg-[#f6f6f6] p-3 text-sm font-medium">{child.name}</Link>)}</div></section>      <PublicFooter />
     </main>;
 
-  const { data: products } = await supabase.from("products").select("id,title,slug,short_description,description,images").eq("category_id", current!.id).eq("status", "active");
-  return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={userEmail} /><section className="mx-auto w-full max-w-7xl p-6"><CategoryBreadcrumbs items={breadcrumbItems} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} /><h1 className="text-2xl font-semibold">{current!.name}</h1><div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{(products ?? []).map((p) => <Link key={p.id} href={`/products/${p.slug}`} className="block rounded-xl border p-3"><h3 className="font-semibold">{p.title}</h3><p className="text-sm text-slate-500">{p.short_description || p.description}</p></Link>)}</div></section>      <PublicFooter />
+  const { data: products } = await supabase.from("products").select("id,title,slug,images").eq("category_id", current!.id).eq("status", "active");
+  const productIds = (products ?? []).map((p) => p.id);
+  const { data: offersData } = productIds.length ? await supabase.from("product_offers").select("product_id,price,status").eq("status", "active").in("product_id", productIds) : { data: [] };
+  const offersByProduct = new Map<string, { product_id: string; price: number }[]>();
+  for (const offer of offersData ?? []) offersByProduct.set(offer.product_id, [...(offersByProduct.get(offer.product_id) ?? []), offer]);
+
+  return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={userEmail} /><section className="mx-auto w-full max-w-7xl p-6"><CategoryBreadcrumbs items={breadcrumbItems} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} /><h1 className="text-2xl font-semibold">{current!.name}</h1><div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{(products ?? []).map((p) => { const offers = offersByProduct.get(p.id) ?? []; const lowest = offers.reduce((min, offer) => (min === null || offer.price < min ? offer.price : min), null as number | null); return <ProductGridCard key={p.id} product={p} lowestPriceAMD={lowest} activeOfferCount={offers.length} />; })}</div></section>      <PublicFooter />
     </main>;
 }
