@@ -6,6 +6,8 @@ import { PublicFooter } from "@/components/public/public-footer";
 import { createClient } from "@/lib/supabase/server";
 import { PriceText } from "@/components/public/price-text";
 import { CategoryBreadcrumbs, breadcrumbJsonLd, type BreadcrumbItem } from "@/components/public/category-breadcrumbs";
+import { MerchantOfferCard } from "@/components/public/merchant-offer-card";
+import { EmptyState } from "@/components/public/state-messages";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -248,29 +250,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
                       {offerRows.map((offer) => {
                         const merchant = extractSingle(offer.merchants);
                         const logo = merchantLogoUrl(merchant?.logo_path);
-                        return (
-                          <article key={offer.id} className="group rounded-2xl bg-slate-50/90 px-3.5 py-3 transition duration-200 hover:bg-white hover:shadow-sm sm:px-4">
-                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                              <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white p-2">
-                                {logo ? <img src={logo} alt={`${merchant?.name ?? "Merchant"} logo`} className="h-full w-full object-contain object-center" /> : <span className="text-xs font-semibold text-slate-600">{merchantInitials(merchant?.name)}</span>}
-                              </div>
-
-                              <div className="min-w-0 flex-1">
-                                <p className="truncate text-[15px] font-semibold text-slate-900">{merchant?.name ?? "Unknown merchant"}</p>
-                                {merchant?.slug ? <p className="mt-0.5 text-xs text-slate-500">{merchant.slug}</p> : null}
-                              </div>
-
-                              <div className="flex flex-col gap-2 sm:items-end">
-                                <p className="text-2xl font-bold leading-none text-slate-950 sm:text-[30px]"><PriceText amountAMD={Number(offer.price)} /></p>
-                                {offer.product_url ? <a href={offer.product_url} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition duration-200 hover:bg-slate-800 sm:text-sm">Տեսնել առաջարկը</a> : <span className="text-xs text-slate-400">N/A</span>}
-                              </div>
-                            </div>
-                          </article>
-                        );
+                        return <MerchantOfferCard key={offer.id} merchantName={merchant?.name ?? "Unknown merchant"} merchantSlug={merchant?.slug} merchantLogoUrl={logo} merchantInitials={merchantInitials(merchant?.name)} price={Number(offer.price)} productUrl={offer.product_url} />;
                       })}
                     </div>
                   </>
-                ) : <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No active offers yet.</p>}
+                ) : <EmptyState className="mt-3">No active offers yet.</EmptyState>}
               </section>
 
               <section id="specifications" className="mt-10">

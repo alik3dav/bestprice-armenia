@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ProductGridCard } from "@/components/public/product-grid-card";
 import { slugify } from "@/lib/slug";
 import { CategoryBreadcrumbs, breadcrumbJsonLd } from "@/components/public/category-breadcrumbs";
+import { EmptyState, ErrorState } from "@/components/public/state-messages";
 
 const one = (v) => (Array.isArray(v) ? v[0] : v);
 const many = (v) => (Array.isArray(v) ? v : v ? [v] : []);
@@ -146,8 +147,8 @@ export default async function CategoryPage({ params, searchParams }) {
   return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={userEmail} />
     <section className="w-full px-4 py-6 sm:px-6 lg:px-8"><div className="mx-auto w-full max-w-[1600px]"><CategoryBreadcrumbs items={breadcrumbItems} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} /><div className="mb-5 flex items-center justify-between"><h1 className="text-2xl font-semibold">{category.name}</h1><Link href="/" className="text-sm text-slate-600 hover:underline">Back to landing</Link></div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"><aside className="lg:pr-6"><div className="sticky top-20"><ShopFilters params={queryParams} merchantIds={Array.from(new Set(offers.map((o) => o.merchant_id)))} specFilters={specFilters} /></div></aside>
-      <div>{productsError ? <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">Failed to load products.</p> : null}
-      {products.length === 0 ? <p className="rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">No products in this category yet.</p> : sorted.length === 0 && hasAnyFilters ? <p className="rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">Products exist, but no results match the selected filters.</p> : sorted.length === 0 ? <p className="rounded-xl border border-dashed border-slate-300 p-8 text-sm text-slate-500">No products found for selected filters.</p> : <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{sorted.map((p) => { const po = offersByProduct.get(p.id) ?? []; const lowest = po.reduce((m, o) => (!m || o.price < m.price ? o : m), null); return <ProductGridCard key={p.id} product={p} lowestPriceAMD={lowest ? Number(lowest.price) : null} activeOfferCount={po.length} />; })}</div>}</div></div>
+      <div>{productsError ? <ErrorState>Failed to load products.</ErrorState> : null}
+      {products.length === 0 ? <EmptyState className="p-8">No products in this category yet.</EmptyState> : sorted.length === 0 && hasAnyFilters ? <EmptyState className="p-8">Products exist, but no results match the selected filters.</EmptyState> : sorted.length === 0 ? <EmptyState className="p-8">No products found for selected filters.</EmptyState> : <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{sorted.map((p) => { const po = offersByProduct.get(p.id) ?? []; const lowest = po.reduce((m, o) => (!m || o.price < m.price ? o : m), null); return <ProductGridCard key={p.id} product={p} lowestPriceAMD={lowest ? Number(lowest.price) : null} activeOfferCount={po.length} />; })}</div>}</div></div>
     </div></section>      <PublicFooter />
     </main>;
 }
