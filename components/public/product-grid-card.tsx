@@ -25,7 +25,7 @@ export function ProductGridCard({ product, lowestPriceAMD, activeOfferCount = 0,
   return (
     <Link href={`/products/${product.slug}`} className={`group block p-2 transition ${widthClassName ?? ""}`.trim()}>
       <article className="flex h-full flex-col">
-        <div className="relative aspect-square rounded-xl bg-[#f6f6f6] p-3">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-[#f6f6f6] p-5">
           <button
             type="button"
             title="Ավելացնել ընտրյալներում"
@@ -39,7 +39,17 @@ export function ProductGridCard({ product, lowestPriceAMD, activeOfferCount = 0,
           >
             <Heart className={`h-4 w-4 transition-all duration-200 ${isFavorite ? "fill-red-500 text-red-500 scale-110" : ""}`} />
           </button>
-          {image ? <img src={String(image)} alt={product.title} className="h-full w-full object-contain mix-blend-multiply contrast-108 brightness-102" /> : <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">No image</div>}
+          {image ? (
+            <div className="flex h-full w-full items-center justify-center">
+              <img
+                src={String(image)}
+                alt={product.title}
+                className="max-h-full max-w-full object-contain mix-blend-multiply contrast-108 brightness-102"
+              />
+            </div>
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">No image</div>
+          )}
         </div>
         <div className="flex flex-1 flex-col space-y-1 px-1 pb-1 pt-3">
           <h3 className="line-clamp-2 min-h-10 text-[15px] font-bold leading-5 text-black">{product.title}</h3>
