@@ -31,7 +31,7 @@ export default async function HomePage() {
         .eq("status", "active")
         .order("name");
 
-      categories = (categoriesData ?? []).filter((c:any) => !c.parent_id);
+      categories = (categoriesData ?? []).filter((c:any) => Boolean(c.parent_id));
     } catch (error) {
       console.error("Failed to load homepage categories from Supabase", error);
     }
