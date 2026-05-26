@@ -260,17 +260,17 @@ export default async function ProductDetailPage({ params }: PageProps) {
               <section id="specifications" className="mt-10">
                 <h2 className="text-2xl font-semibold">Specifications</h2>
                 {!hasTemplate ? <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No specification template is attached to this product category yet.</p> : !hasAnySpecValues ? <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No specification values are available for this product yet.</p> : sortedGroups.length > 0 ? (
-                  <div className="mt-5 max-w-3xl space-y-6">
+                  <div className="mt-5 max-w-[860px] space-y-6">
                     {sortedGroups.map((group) => (
                       <div key={group.groupName}>
                         <h3 className="text-base font-semibold tracking-tight text-slate-900 sm:text-lg">{group.groupName}</h3>
                         <div className="mt-2.5 space-y-0.5">
                           {group.items.map((item) => (
                             <div key={item.key} className="py-1.5 sm:py-2">
-                              <div className="flex flex-col gap-0.5 sm:grid sm:grid-cols-[220px_minmax(0,1fr)_auto] sm:items-center sm:gap-x-0">
-                                <p className="text-sm font-medium text-slate-500 sm:pr-0 sm:text-right">{item.name}</p>
-                                <div aria-hidden="true" className="hidden h-0 border-t border-dashed border-slate-300/80 sm:block" />
-                                <p className="text-sm font-semibold leading-5 text-slate-900 sm:text-left">{item.value}</p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-sm font-medium text-slate-500">{item.name}</p>
+                                <div aria-hidden="true" className="h-0 flex-1 border-t border-dashed border-slate-300/80" />
+                                <p className="text-right text-sm font-semibold leading-5 text-slate-900">{item.value}</p>
                               </div>
                             </div>
                           ))}
