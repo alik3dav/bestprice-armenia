@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { PublicHeader } from "@/components/public/public-header";
 import { PublicFooter } from "@/components/public/public-footer";
 import { createClient } from "@/lib/supabase/server";
-import { PriceText } from "@/components/public/price-text";
 import { CategoryBreadcrumbs, breadcrumbJsonLd, type BreadcrumbItem } from "@/components/public/category-breadcrumbs";
 import { MerchantOfferCard } from "@/components/public/merchant-offer-card";
 import { EmptyState } from "@/components/public/state-messages";
@@ -214,43 +213,33 @@ export default async function ProductDetailPage({ params }: PageProps) {
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">{product.title}</h1>
               <p className="text-base leading-7 text-slate-600">{product.short_description || "No short description available."}</p>
 
-              <div className="rounded-2xl bg-gradient-to-br from-slate-50 to-white p-4 shadow-sm ring-1 ring-slate-200/70 sm:p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Լավագույն առաջարկ</p>
-                {lowestOffer ? (() => {
-                  const lowestMerchant = extractSingle(lowestOffer.merchants);
-                  const lowestMerchantLogo = merchantLogoUrl(lowestMerchant?.logo_path);
-                  return (
-                    <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex min-w-0 items-center gap-3">
-                        <div className="flex h-14 w-16 shrink-0 items-center justify-center rounded-xl bg-white p-2 ring-1 ring-slate-200">
-                          {lowestMerchantLogo ? <img src={lowestMerchantLogo} alt={`${lowestMerchant?.name ?? "Merchant"} logo`} className="h-full w-full object-contain object-center" /> : <span className="text-sm font-semibold text-slate-600">{merchantInitials(lowestMerchant?.name)}</span>}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-slate-900">{lowestMerchant?.name ?? "Unknown merchant"}</p>
-                          <p className="mt-0.5 text-2xl font-bold leading-none text-slate-950"><PriceText amountAMD={Number(lowestOffer.price)} /></p>
-                        </div>
-                      </div>
-
-                      {lowestOffer.product_url ? (
-                        <a href={lowestOffer.product_url} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition duration-200 hover:bg-slate-800">
-                          Տեսնել առաջարկը
-                        </a>
-                      ) : null}
-                    </div>
-                  );
-                })() : <p className="mt-1 text-sm text-slate-500">No active offers available right now.</p>}
-              </div>
+              {lowestOffer ? (() => {
+                const lowestMerchant = extractSingle(lowestOffer.merchants);
+                const lowestMerchantLogo = merchantLogoUrl(lowestMerchant?.logo_path);
+                return (
+                  <section>
+                    <MerchantOfferCard
+                      merchantName={lowestMerchant?.name ?? "Unknown merchant"}
+                      merchantLogoUrl={lowestMerchantLogo}
+                      merchantInitials={merchantInitials(lowestMerchant?.name)}
+                      price={Number(lowestOffer.price)}
+                      productUrl={lowestOffer.product_url}
+                      isBestOffer
+                    />
+                  </section>
+                );
+              })() : <p className="rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No active offers available right now.</p>}
 
               <section id="offers" className="mt-8">
                 <h2 className="text-2xl font-semibold">Merchant offers</h2>
                 {offerRows.length > 0 ? (
                   <>
                     <p className="mt-3 text-sm text-slate-600">{getOfferCountText(offerRows.length)}</p>
-                    <div className="mt-4 space-y-2.5">
+                    <div className="mt-4 space-y-3">
                       {offerRows.map((offer) => {
                         const merchant = extractSingle(offer.merchants);
                         const logo = merchantLogoUrl(merchant?.logo_path);
-                        return <MerchantOfferCard key={offer.id} merchantName={merchant?.name ?? "Unknown merchant"} merchantSlug={merchant?.slug} merchantLogoUrl={logo} merchantInitials={merchantInitials(merchant?.name)} price={Number(offer.price)} productUrl={offer.product_url} />;
+                        return <MerchantOfferCard key={offer.id} merchantName={merchant?.name ?? "Unknown merchant"} merchantLogoUrl={logo} merchantInitials={merchantInitials(merchant?.name)} price={Number(offer.price)} productUrl={offer.product_url} />;
                       })}
                     </div>
                   </>
