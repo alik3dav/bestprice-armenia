@@ -267,10 +267,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
                         <div className="mt-2.5 space-y-0.5">
                           {group.items.map((item) => (
                             <div key={item.key} className="py-1.5 sm:py-2">
-                              <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
-                                <p className="text-sm font-medium text-slate-500 sm:w-[220px] sm:min-w-[220px]">{item.name}</p>
-                                <div aria-hidden="true" className="hidden h-px flex-1 max-w-[120px] bg-slate-300/90 sm:block" />
-                                <p className="text-sm font-semibold leading-5 text-slate-900 sm:flex-1 sm:text-left">{item.value}</p>
+                              <div className="flex flex-col gap-0.5 sm:grid sm:grid-cols-[220px_minmax(0,1fr)_auto] sm:items-center sm:gap-x-2">
+                                <p className="text-sm font-medium text-slate-500">{item.name}</p>
+                                <div aria-hidden="true" className="hidden h-0 border-t border-dashed border-slate-300/80 sm:block" />
+                                <p className="text-sm font-semibold leading-5 text-slate-900 sm:text-left">{item.value}</p>
                               </div>
                             </div>
                           ))}
