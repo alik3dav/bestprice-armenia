@@ -260,17 +260,17 @@ export default async function ProductDetailPage({ params }: PageProps) {
               <section id="specifications" className="mt-10">
                 <h2 className="text-2xl font-semibold">Specifications</h2>
                 {!hasTemplate ? <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No specification template is attached to this product category yet.</p> : !hasAnySpecValues ? <p className="mt-3 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">No specification values are available for this product yet.</p> : sortedGroups.length > 0 ? (
-                  <div className="mt-7 max-w-4xl space-y-8">
+                  <div className="mt-5 max-w-3xl space-y-6">
                     {sortedGroups.map((group) => (
                       <div key={group.groupName}>
-                        <h3 className="text-lg font-semibold tracking-tight text-slate-900 sm:text-xl">{group.groupName}</h3>
-                        <div className="mt-4 space-y-1.5">
+                        <h3 className="text-base font-semibold tracking-tight text-slate-900 sm:text-lg">{group.groupName}</h3>
+                        <div className="mt-2.5 space-y-0.5">
                           {group.items.map((item) => (
-                            <div key={item.key} className="py-2 sm:py-2.5">
-                              <div className="flex flex-col gap-1.5 sm:flex-row sm:items-baseline sm:gap-3">
-                                <p className="text-sm font-medium text-slate-500 sm:w-[260px] sm:min-w-[260px]">{item.name}</p>
-                                <div aria-hidden="true" className="hidden h-px flex-1 bg-slate-200/90 sm:block" />
-                                <p className="text-sm font-semibold text-slate-900 sm:w-auto sm:flex-none sm:text-left">{item.value}</p>
+                            <div key={item.key} className="py-1.5 sm:py-2">
+                              <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
+                                <p className="text-sm font-medium text-slate-500 sm:w-[220px] sm:min-w-[220px]">{item.name}</p>
+                                <div aria-hidden="true" className="hidden h-px flex-1 max-w-[120px] bg-slate-300/90 sm:block" />
+                                <p className="text-sm font-semibold leading-5 text-slate-900 sm:flex-1 sm:text-left">{item.value}</p>
                               </div>
                             </div>
                           ))}
