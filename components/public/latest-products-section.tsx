@@ -61,13 +61,13 @@ export async function LatestProductsSection() {
 
     return (
       <section id="latest-products" className="w-full px-4 pb-10 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-7xl rounded-[2.75rem] border border-white bg-white/90 p-4 shadow-xl shadow-slate-950/[0.04] backdrop-blur sm:p-6 lg:p-8">
+        <div className="mx-auto max-w-7xl rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.24em] text-orange-500">Նոր տեսականի</p>
-              <h2 className="mt-2 text-3xl font-black tracking-[-0.035em] text-slate-950">Վերջին ավելացված ապրանքներ</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Նոր տեսականի</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">Վերջին ավելացված ապրանքներ</h2>
             </div>
-            <Link href="/shop" className="inline-flex items-center rounded-full border border-slate-200 px-4 py-2 text-sm font-black text-slate-600 transition hover:border-blue-100 hover:bg-blue-50 hover:text-blue-700">
+            <Link href="/shop" className="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
               Տեսնել բոլորը
             </Link>
           </div>
@@ -84,7 +84,7 @@ export async function LatestProductsSection() {
                     product={product}
                     lowestPriceAMD={lowest ? Number(lowest.price) : null}
                     activeOfferCount={offerCount}
-                    widthClassName="w-[220px] shrink-0 sm:w-[240px]"
+                    widthClassName="w-[200px] shrink-0 sm:w-[220px]"
                   />
                 );
               })}
