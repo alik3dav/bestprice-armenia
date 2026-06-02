@@ -56,29 +56,34 @@ export async function LatestProductsSection() {
 
     return (
       <section id="latest-products" className="w-full px-4 pb-10 sm:px-6 lg:px-10">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-2xl font-semibold tracking-tight">Վերջին ավելացված ապրանքներ</h2>
-          <Link href="/" className="text-sm font-medium text-slate-600 transition hover:text-slate-900 hover:underline">
-            View all
-          </Link>
-        </div>
+        <div className="mx-auto max-w-7xl rounded-[2rem] bg-white p-4 shadow-sm sm:p-6 lg:p-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.24em] text-orange-500">Նոր տեսականի</p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950">Վերջին ավելացված ապրանքներ</h2>
+            </div>
+            <Link href="/shop" className="text-sm font-bold text-slate-600 transition hover:text-blue-700 hover:underline">
+              Տեսնել բոլորը
+            </Link>
+          </div>
 
-        <div className="mt-5 overflow-x-auto pb-2">
-          <div className="flex min-w-max gap-4">
-            {products.map((product) => {
-              const lowest = lowestOfferByProduct.get(product.id);
-              const offerCount = offerCountByProduct.get(product.id) ?? 0;
+          <div className="mt-6 overflow-x-auto pb-2">
+            <div className="flex min-w-max gap-4">
+              {products.map((product) => {
+                const lowest = lowestOfferByProduct.get(product.id);
+                const offerCount = offerCountByProduct.get(product.id) ?? 0;
 
-              return (
-                <ProductGridCard
-                  key={product.id}
-                  product={product}
-                  lowestPriceAMD={lowest ? Number(lowest.price) : null}
-                  activeOfferCount={offerCount}
-                  widthClassName="w-[220px] shrink-0 sm:w-[240px]"
-                />
-              );
-            })}
+                return (
+                  <ProductGridCard
+                    key={product.id}
+                    product={product}
+                    lowestPriceAMD={lowest ? Number(lowest.price) : null}
+                    activeOfferCount={offerCount}
+                    widthClassName="w-[220px] shrink-0 sm:w-[240px]"
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
