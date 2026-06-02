@@ -16,8 +16,13 @@ type OfferRow = {
 };
 
 const LATEST_PRODUCTS_LIMIT = 12;
+const hasSupabaseEnv = () => Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 export async function LatestProductsSection() {
+  if (!hasSupabaseEnv()) {
+    return <EmptyState />;
+  }
+
   try {
     const supabase = await createClient();
     const { data: productsData, error: productsError } = await supabase
