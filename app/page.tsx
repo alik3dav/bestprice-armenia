@@ -96,38 +96,35 @@ export default async function HomePage() {
   const featuredCategories = categories.slice(0, 12);
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#f4f7fb] text-slate-950">
+    <main className="min-h-screen overflow-hidden bg-[#f6f8fc] text-slate-950">
       <PublicHeader userEmail={user?.email ?? null} />
 
-      <section className="relative isolate px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-10 lg:px-10 lg:pb-20">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_12%_18%,rgba(37,99,235,0.24),transparent_32%),radial-gradient(circle_at_84%_12%,rgba(249,115,22,0.22),transparent_28%),linear-gradient(180deg,#ffffff_0%,#eef5ff_54%,#f4f7fb_100%)]" />
-        <div className="absolute left-[8%] top-24 -z-10 h-52 w-52 rounded-full bg-blue-500/10 blur-3xl" />
-        <div className="absolute bottom-24 right-[7%] -z-10 h-64 w-64 rounded-full bg-orange-400/10 blur-3xl" />
+      <section className="relative isolate px-4 pb-14 pt-8 sm:px-6 sm:pb-20 sm:pt-10 lg:px-10 lg:pb-24">
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,#ffffff_0%,#eef5ff_48%,#f6f8fc_100%)]" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_9%_13%,rgba(37,99,235,0.26),transparent_30%),radial-gradient(circle_at_88%_8%,rgba(249,115,22,0.18),transparent_28%),radial-gradient(circle_at_50%_55%,rgba(14,165,233,0.13),transparent_36%)]" />
+        <div className="absolute inset-x-0 top-0 -z-10 h-[520px] opacity-[0.42] [background-image:linear-gradient(to_right,rgba(15,23,42,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.08)_1px,transparent_1px)] [background-size:72px_72px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
 
         <div className="mx-auto max-w-7xl">
-          <div className="grid items-center gap-8 lg:grid-cols-[1.03fr_0.97fr]">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.02fr_0.98fr]">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/75 px-3 py-1.5 text-sm font-bold text-blue-700 shadow-sm shadow-blue-950/5 backdrop-blur">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/80 px-3 py-1.5 text-sm font-black text-blue-700 shadow-sm shadow-blue-950/5 backdrop-blur-xl">
                 <Sparkles className="h-4 w-4" />
-                Գտեք լավագույն գինը Հայաստանում
+                Պրեմիում գնումների համեմատման հարթակ
               </div>
-              <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-[-0.04em] text-slate-950 sm:text-5xl lg:text-7xl">
-                Գնման որոշումը դարձրեք արագ, հստակ և շահավետ։
+              <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-[-0.055em] text-slate-950 sm:text-6xl lg:text-7xl">
+                Գտեք լավագույն գինը՝ ավելի քիչ քայլերով։
               </h1>
-              <p className="mt-5 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
-                BestPrice Armenia-ն միավորում է ապրանքների կատեգորիաները, խանութների առաջարկներն ու գները, որպեսզի մեկ որոնումով տեսնեք ամենահարմար տարբերակը։
+              <p className="mt-6 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
+                BestPrice Armenia-ն ներկայացնում է ապրանքները, խանութների առաջարկները և հիմնական տվյալները SaaS-ի նման մաքուր վահանակում, որպեսզի ընտրությունը լինի արագ, վստահելի և հաճելի։
               </p>
 
-              <form action="/search" className="mt-8 max-w-3xl rounded-[2rem] border border-white/90 bg-white/90 p-2 shadow-2xl shadow-blue-950/10 backdrop-blur sm:flex sm:items-center sm:gap-2">
-                <div className="flex min-h-14 flex-1 items-center gap-3 px-4">
+              <form action="/search" className="mt-8 max-w-3xl rounded-[2rem] border border-white/90 bg-white/90 p-2 shadow-2xl shadow-blue-950/10 backdrop-blur-xl sm:flex sm:items-center sm:gap-2">
+                <label className="flex min-h-14 flex-1 items-center gap-3 rounded-[1.5rem] bg-slate-50 px-4 text-slate-500 ring-1 ring-slate-200/70 sm:bg-transparent sm:ring-0">
                   <Search className="h-5 w-5 text-blue-600" />
-                  <input
-                    name="q"
-                    placeholder="Որոնել հեռախոս, նոթբուք, հեռուստացույց..."
-                    className="w-full bg-transparent text-sm font-semibold outline-none placeholder:text-slate-400 sm:text-base"
-                  />
-                </div>
-                <button className="mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-6 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-blue-700 sm:mt-0 sm:w-auto" type="submit">
+                  <span className="sr-only">Որոնել ապրանք</span>
+                  <input name="q" type="search" placeholder="Որոնել ապրանք, բրենդ կամ կատեգորիա" className="w-full bg-transparent text-base font-semibold text-slate-950 placeholder:text-slate-400 focus:outline-none" />
+                </label>
+                <button className="mt-2 inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-[1.5rem] bg-slate-950 px-6 text-sm font-black text-white shadow-lg shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-blue-700 sm:mt-0 sm:w-auto" type="submit">
                   Որոնել
                   <ArrowRight className="h-4 w-4" />
                 </button>
@@ -136,11 +133,7 @@ export default async function HomePage() {
               <div className="mt-5 flex flex-wrap items-center gap-2 text-sm">
                 <span className="font-bold text-slate-500">Հաճախ փնտրում են՝</span>
                 {popularSearches.map((search) => (
-                  <Link
-                    key={search}
-                    href={`/search?q=${encodeURIComponent(search)}`}
-                    className="rounded-full border border-white/80 bg-white/70 px-3 py-1.5 font-bold text-slate-700 shadow-sm transition hover:border-blue-100 hover:text-blue-700"
-                  >
+                  <Link key={search} href={`/search?q=${encodeURIComponent(search)}`} className="rounded-full border border-white/80 bg-white/75 px-3 py-1.5 font-bold text-slate-700 shadow-sm backdrop-blur transition hover:border-blue-100 hover:text-blue-700">
                     {search}
                   </Link>
                 ))}
@@ -148,7 +141,7 @@ export default async function HomePage() {
 
               <div className="mt-8 grid max-w-2xl grid-cols-3 gap-3">
                 {heroStats.map((stat) => (
-                  <div key={stat.label} className="rounded-3xl border border-white/80 bg-white/65 p-4 shadow-sm backdrop-blur">
+                  <div key={stat.label} className="rounded-[1.5rem] border border-white/80 bg-white/70 p-4 shadow-sm backdrop-blur-xl">
                     <p className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">{stat.value}</p>
                     <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{stat.label}</p>
                   </div>
@@ -157,7 +150,7 @@ export default async function HomePage() {
             </div>
 
             <div className="relative">
-              <div className="absolute -left-4 top-10 hidden rounded-3xl border border-white/70 bg-white/80 p-4 shadow-xl shadow-blue-950/10 backdrop-blur sm:block">
+              <div className="absolute -left-4 top-10 hidden rounded-[1.6rem] border border-white/70 bg-white/85 p-4 shadow-xl shadow-blue-950/10 backdrop-blur-xl sm:block">
                 <div className="flex items-center gap-3">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
                     <TrendingDown className="h-5 w-5" />
@@ -169,8 +162,8 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div className="overflow-hidden rounded-[2.5rem] border border-white/15 bg-slate-950 p-5 text-white shadow-2xl shadow-slate-950/25 sm:p-6">
-                <div className="rounded-[2rem] bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.42),transparent_34%),linear-gradient(145deg,rgba(255,255,255,0.16),rgba(255,255,255,0.04))] p-5 ring-1 ring-white/10">
+              <div className="overflow-hidden rounded-[2.75rem] border border-white/15 bg-slate-950 p-5 text-white shadow-2xl shadow-slate-950/25 sm:p-6">
+                <div className="rounded-[2.15rem] bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.48),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(249,115,22,0.22),transparent_32%),linear-gradient(145deg,rgba(255,255,255,0.17),rgba(255,255,255,0.04))] p-5 ring-1 ring-white/10">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-sm font-bold text-white/55">Այսօրվա խելացի ընտրություն</p>
@@ -182,7 +175,7 @@ export default async function HomePage() {
                   </div>
 
                   <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-3xl bg-white p-4 text-slate-950">
+                    <div className="rounded-[1.5rem] bg-white p-4 text-slate-950 shadow-xl shadow-slate-950/10">
                       <div className="flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-50 text-orange-500">
                           <Flame className="h-5 w-5" />
@@ -193,7 +186,7 @@ export default async function HomePage() {
                         </div>
                       </div>
                     </div>
-                    <div className="rounded-3xl bg-white/10 p-4 ring-1 ring-white/10">
+                    <div className="rounded-[1.5rem] bg-white/10 p-4 ring-1 ring-white/10">
                       <div className="flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-blue-200">
                           <Clock3 className="h-5 w-5" />
@@ -208,7 +201,7 @@ export default async function HomePage() {
 
                   <div className="mt-4 space-y-3">
                     {spotlightRows.map((item) => (
-                      <div key={item.name} className="rounded-3xl bg-white p-4 text-slate-950 shadow-lg shadow-slate-950/10">
+                      <div key={item.name} className="rounded-[1.65rem] bg-white p-4 text-slate-950 shadow-lg shadow-slate-950/10">
                         <div className="flex items-center justify-between gap-3">
                           <div>
                             <p className="text-sm font-black">{item.name}</p>
@@ -228,7 +221,7 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div className="absolute -bottom-5 right-4 hidden rounded-3xl border border-white/70 bg-white/85 p-4 shadow-xl shadow-orange-950/10 backdrop-blur sm:block">
+              <div className="absolute -bottom-5 right-4 hidden rounded-[1.5rem] border border-white/70 bg-white/85 p-4 shadow-xl shadow-orange-950/10 backdrop-blur-xl sm:block">
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Արագ ուղի</p>
                 <Link href="/shop" className="mt-1 inline-flex items-center gap-1 text-sm font-black text-slate-950 transition hover:text-blue-700">
                   Դիտել խանութը
@@ -245,7 +238,7 @@ export default async function HomePage() {
           {valueCards.map((card) => {
             const Icon = card.icon;
             return (
-              <article key={card.title} className="group relative overflow-hidden rounded-[2rem] border border-white bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-950/10">
+              <article key={card.title} className="group relative overflow-hidden rounded-[2rem] border border-white bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-950/10">
                 <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-blue-50 transition group-hover:bg-orange-50" />
                 <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-lg shadow-slate-950/15">
                   <Icon className="h-6 w-6" />
@@ -260,11 +253,11 @@ export default async function HomePage() {
       </section>
 
       <section className="w-full px-4 pb-12 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] border border-white bg-white p-4 shadow-sm sm:p-6 lg:p-8">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] border border-white bg-white/90 p-4 shadow-xl shadow-slate-950/[0.04] backdrop-blur sm:p-6 lg:p-8">
           <div className="grid gap-6 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.24em] text-blue-600">Կատեգորիաներ</p>
-              <h2 className="mt-3 text-3xl font-black tracking-[-0.03em] text-slate-950 sm:text-4xl">Սկսեք գնումը ճիշտ բաժնից</h2>
+              <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-slate-950 sm:text-4xl">Սկսեք գնումը ճիշտ բաժնից</h2>
               <p className="mt-3 text-sm leading-7 text-slate-600">Բացեք ամենահարմար բաժինը և համեմատեք նույն տեսակի ապրանքների առաջարկները մեկ էջում։</p>
             </div>
             <div className="flex flex-wrap items-center justify-start gap-3 lg:justify-end">
@@ -272,7 +265,7 @@ export default async function HomePage() {
                 Բոլոր կատեգորիաները
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/shop" className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-blue-700">
+              <Link href="/shop" className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg shadow-slate-950/15 transition hover:-translate-y-0.5 hover:bg-blue-700">
                 Դիտել ապրանքները
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -282,12 +275,7 @@ export default async function HomePage() {
           {featuredCategories.length > 0 ? (
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
               {featuredCategories.map((category) => (
-                <CategoryCard
-                  key={category.id}
-                  name={category.name}
-                  href={`/categories/${category.slug}` as Route}
-                  imageUrl={category.image_url}
-                />
+                <CategoryCard key={category.id} name={category.name} href={`/categories/${category.slug}` as Route} imageUrl={category.image_url} />
               ))}
             </div>
           ) : (
@@ -301,11 +289,11 @@ export default async function HomePage() {
       </Suspense>
 
       <section className="px-4 pb-14 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] bg-slate-950 text-white shadow-2xl shadow-slate-950/15">
-          <div className="grid gap-8 bg-[radial-gradient(circle_at_15%_20%,rgba(59,130,246,0.28),transparent_28%),radial-gradient(circle_at_85%_10%,rgba(249,115,22,0.22),transparent_26%)] p-6 sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:p-10">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-[2.75rem] bg-slate-950 text-white shadow-2xl shadow-slate-950/15">
+          <div className="grid gap-8 bg-[radial-gradient(circle_at_15%_20%,rgba(59,130,246,0.30),transparent_28%),radial-gradient(circle_at_85%_10%,rgba(249,115,22,0.24),transparent_26%)] p-6 sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:p-10">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.24em] text-blue-200">Ինչպես է աշխատում</p>
-              <h2 className="mt-3 text-3xl font-black tracking-[-0.03em] sm:text-4xl">Գնումների պարզ ճանապարհ՝ երեք քայլով</h2>
+              <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] sm:text-4xl">Գնումների պարզ ճանապարհ՝ երեք քայլով</h2>
               <p className="mt-4 text-sm leading-7 text-white/65">Պլանավորեք գնումը, համեմատեք իրական առաջարկները և ընտրեք այն տարբերակը, որը համապատասխանում է ձեր բյուջեին։</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
