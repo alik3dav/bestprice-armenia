@@ -2,8 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-page-bg: #f3f5f7;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-border: #d9dee5;
+  --color-border-muted: #e8ebef;
+  --color-text-primary: #1f2933;
+  --color-text-secondary: #52616f;
+  --color-text-muted: #8a96a3;
+  --color-brand-red: #e30613;
+  --color-brand-red-hover: #c9000b;
+  --color-success-green: #16a34a;
+  --color-warning-orange: #f59e0b;
+  --color-rating-orange: #f6a400;
+  --color-link-blue: #2563eb;
+  --color-discount-red: #dc2626;
+  --color-price-text: #111827;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --shadow-subtle: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
 body {
-  @apply bg-slate-100 text-slate-900;
+  background: var(--color-page-bg);
+  color: var(--color-text-primary);
 }
 
 .admin-table thead {
