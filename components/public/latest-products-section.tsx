@@ -60,20 +60,20 @@ export async function LatestProductsSection() {
     }
 
     return (
-      <section id="latest-products" className="w-full px-4 pb-10 sm:px-6 lg:px-10">
-        <div className="mx-auto max-w-7xl rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section id="latest-products" className="w-full px-3 pb-5 sm:px-5 lg:px-6">
+        <div className="mx-auto max-w-[1200px] rounded-lg border border-[var(--color-border)] bg-white p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Նոր տեսականի</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">Վերջին ավելացված ապրանքներ</h2>
+              <p className="text-xs font-semibold text-[var(--color-brand-red)]">Նոր տեսականի</p>
+              <h2 className="mt-1 text-xl font-semibold tracking-tight text-[var(--color-text-primary)]">Վերջին ավելացված ապրանքներ</h2>
             </div>
-            <Link href="/shop" className="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+            <Link href="/shop" className="inline-flex items-center rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-text-secondary)] transition hover:bg-[var(--color-page-bg)]">
               Տեսնել բոլորը
             </Link>
           </div>
 
-          <div className="mt-6 overflow-x-auto pb-2">
-            <div className="flex min-w-max gap-4">
+          <div className="mt-4 overflow-x-auto pb-2">
+            <div className="flex min-w-max gap-3">
               {products.map((product) => {
                 const lowest = lowestOfferByProduct.get(product.id);
                 const offerCount = offerCountByProduct.get(product.id) ?? 0;
@@ -100,18 +100,20 @@ export async function LatestProductsSection() {
 
 export function LatestProductsSkeleton() {
   return (
-    <section className="w-full px-4 pb-10 sm:px-6 lg:px-10" aria-busy="true" aria-live="polite">
-      <div className="h-8 w-56 animate-pulse rounded bg-slate-200" />
-      <div className="mt-5 overflow-x-auto pb-2">
-        <div className="flex min-w-max gap-4">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <div key={index} className="w-[220px] shrink-0 p-2 sm:w-[240px]">
-              <div className="aspect-square animate-pulse rounded-xl bg-slate-200" />
-              <div className="mt-3 h-4 w-5/6 animate-pulse rounded bg-slate-200" />
-              <div className="mt-2 h-3 w-full animate-pulse rounded bg-slate-100" />
-              <div className="mt-3 h-6 w-1/2 animate-pulse rounded bg-slate-200" />
-            </div>
-          ))}
+    <section className="w-full px-3 pb-5 sm:px-5 lg:px-6" aria-busy="true" aria-live="polite">
+      <div className="mx-auto max-w-[1200px] rounded-lg border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <div className="h-7 w-56 animate-pulse rounded bg-slate-200" />
+        <div className="mt-4 overflow-x-auto pb-2">
+          <div className="flex min-w-max gap-3">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div key={index} className="w-[200px] shrink-0 rounded-md border border-[var(--color-border-muted)] p-2 sm:w-[220px]">
+                <div className="aspect-square animate-pulse rounded bg-slate-200" />
+                <div className="mt-3 h-4 w-5/6 animate-pulse rounded bg-slate-200" />
+                <div className="mt-2 h-3 w-full animate-pulse rounded bg-slate-100" />
+                <div className="mt-3 h-6 w-1/2 animate-pulse rounded bg-slate-200" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -120,18 +122,22 @@ export function LatestProductsSkeleton() {
 
 function EmptyState() {
   return (
-    <section className="w-full px-4 pb-10 sm:px-6 lg:px-10">
-      <h2 className="text-2xl font-semibold tracking-tight">Վերջին ավելացված ապրանքներ</h2>
-      <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">Ապրանքներ դեռ հասանելի չեն։</p>
+    <section className="w-full px-3 pb-5 sm:px-5 lg:px-6">
+      <div className="mx-auto max-w-[1200px] rounded-lg border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <h2 className="text-xl font-semibold tracking-tight text-[var(--color-text-primary)]">Վերջին ավելացված ապրանքներ</h2>
+        <p className="mt-4 rounded-md border border-dashed border-[var(--color-border)] bg-[var(--color-page-bg)] p-4 text-sm text-[var(--color-text-muted)]">Ապրանքներ դեռ հասանելի չեն։</p>
+      </div>
     </section>
   );
 }
 
 function ErrorState() {
   return (
-    <section className="w-full px-4 pb-10 sm:px-6 lg:px-10">
-      <h2 className="text-2xl font-semibold tracking-tight">Վերջին ավելացված ապրանքներ</h2>
-      <p className="mt-4 rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">Չհաջողվեց բեռնել վերջին ապրանքները։</p>
+    <section className="w-full px-3 pb-5 sm:px-5 lg:px-6">
+      <div className="mx-auto max-w-[1200px] rounded-lg border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <h2 className="text-xl font-semibold tracking-tight text-[var(--color-text-primary)]">Վերջին ավելացված ապրանքներ</h2>
+        <p className="mt-4 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">Չհաջողվեց բեռնել վերջին ապրանքները։</p>
+      </div>
     </section>
   );
 }
