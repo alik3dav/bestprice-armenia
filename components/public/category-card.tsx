@@ -11,9 +11,9 @@ export function CategoryCard({ name, href, imageUrl }: CategoryCardProps) {
   return (
     <Link
       href={href}
-      className="group rounded-md border border-[var(--color-border-muted)] bg-[var(--color-page-bg)] p-2 transition hover:border-[var(--color-border)] hover:bg-white"
+      className="group rounded-md bg-[var(--color-page-bg)] p-2 transition hover:bg-white"
     >
-      <div className="aspect-[4/3] w-full rounded bg-white p-3 ring-1 ring-[var(--color-border-muted)] transition">
+      <div className="aspect-[4/3] w-full rounded bg-white p-3 transition">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -21,7 +21,7 @@ export function CategoryCard({ name, href, imageUrl }: CategoryCardProps) {
             className="h-full w-full object-contain mix-blend-multiply contrast-108 brightness-102"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center rounded border border-dashed border-[var(--color-border)] bg-[var(--color-page-bg)] text-xs text-[var(--color-text-muted)]">
+          <div className="flex h-full w-full items-center justify-center rounded bg-[var(--color-page-bg)] text-xs text-[var(--color-text-muted)]">
             No image
           </div>
         )}

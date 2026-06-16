@@ -16,11 +16,11 @@ BestPrice Armenia is an Armenia-based price comparison and product discovery mar
 - Keep product cards compact and dense but readable.
 - Make search the primary action in the header.
 - Keep category navigation clear and easy to scan.
-- Use minimal shadows, thin borders, and subtle rounded corners.
+- Prefer borderless surfaces, soft background separation, minimal shadows, and subtle rounded corners.
 - Create a professional e-commerce feeling, not a luxury SaaS landing page.
 - Prepare all patterns for Armenian, Russian, and English text lengths.
 - Avoid dark theme as the default.
-- Avoid oversized spacing.
+- Avoid oversized spacing, nested bordered panels, and excessive section padding.
 - Avoid playful gradients.
 - Avoid childish rounded UI.
 - Avoid one-off visual patterns that cannot scale across categories and product pages.
@@ -108,7 +108,7 @@ Use mostly neutral colors. Brand red is reserved for important actions, logo are
 
 - Page background: use `--color-page-bg`.
 - Cards, panels, filters, menus, and tables: use `--color-surface`.
-- Sticky or floating layers: use `--color-surface-elevated` with a thin border.
+- Sticky or floating layers: use `--color-surface-elevated`; add a thin border only when needed for readability.
 - Default borders: use `--color-border`.
 - Internal dividers: use `--color-border-muted`.
 - Main text: use `--color-text-primary`.
@@ -169,7 +169,9 @@ font-family: Inter, "Noto Sans Armenian", "Noto Sans", Arial, sans-serif;
 - Default card radius: `6px`.
 - Small controls and badges: `4px`.
 - Larger panels and banners: `8px`.
-- Prefer thin borders over shadows.
+- Prefer borderless cards and panels separated by background tone, whitespace, or typography.
+- Use borders only for inputs, tables, dividers, dropdowns, drawers, active/focus states, and places where hierarchy would otherwise be unclear.
+- Avoid nested bordered sections; do not wrap every section, card, chip, and image with its own border.
 - Use shadows sparingly and only for dropdowns, drawers, sticky overlays, and elevated interactive surfaces.
 - Do not use heavy card shadows.
 
@@ -182,7 +184,7 @@ font-family: Inter, "Noto Sans Armenian", "Noto Sans", Arial, sans-serif;
   - Logo on the left.
   - Large central search bar.
   - Compact user actions on the right.
-- Header should remain visually light with white surface and thin bottom border.
+- Header should remain visually light with a white surface; use a bottom border only if separation is unclear.
 - Use brand red for the logo area and primary search action only.
 - Keep header height compact: `56px` to `72px` on desktop.
 - Mobile header should prioritize logo and search, with secondary actions moved to compact icons or menus.
@@ -195,7 +197,7 @@ font-family: Inter, "Noto Sans Armenian", "Noto Sans", Arial, sans-serif;
 - Recommended mobile height: `38px` to `42px`.
 - Use clear placeholder text that supports localization.
 - Search button should use brand red or a strong neutral style.
-- Autocomplete dropdowns should use white surface, thin border, compact rows, and highlighted query matches.
+- Autocomplete dropdowns should use a white surface, compact rows, and highlighted query matches; add a thin border only when needed.
 - Search results should include product, category, and store suggestions when available.
 
 ### Category tabs and navigation

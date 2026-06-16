@@ -78,9 +78,9 @@ export default async function HomePage() {
     <main className="min-h-screen bg-[var(--color-page-bg)] text-[var(--color-text-primary)]">
       <PublicHeader userEmail={user?.email ?? null} />
 
-      <section className="border-b border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-6 sm:px-5 lg:px-6">
+      <section className="bg-[var(--color-surface)] px-3 py-6 sm:px-5 lg:px-6">
         <div className="mx-auto grid max-w-[1200px] gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-stretch">
-          <div className="rounded-lg border border-[var(--color-border)] bg-white p-4 sm:p-5 lg:p-6">
+          <div className="rounded-lg bg-white p-2 sm:p-3 lg:p-4">
             <p className="text-xs font-semibold text-[var(--color-brand-red)]">BestPrice Armenia</p>
             <h1 className="mt-3 max-w-2xl text-2xl font-bold leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-[28px]">
               Համեմատեք գները և գտեք ճիշտ առաջարկը Հայաստանում
@@ -89,8 +89,8 @@ export default async function HomePage() {
               Որոնեք ապրանք, բացեք կատեգորիաները և մեկ էջում տեսեք խանութների առաջարկները, գները և առկայության տվյալները։
             </p>
 
-            <form action="/search" className="mt-5 flex max-w-3xl flex-col gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-page-bg)] p-2 sm:flex-row">
-              <label className="flex min-h-11 flex-1 items-center gap-2 rounded-md bg-white px-3 text-[var(--color-text-muted)] ring-1 ring-[var(--color-border-muted)]">
+            <form action="/search" className="mt-5 flex max-w-3xl flex-col gap-2 rounded-lg bg-[var(--color-page-bg)] p-1.5 sm:flex-row">
+              <label className="flex min-h-11 flex-1 items-center gap-2 rounded-md bg-white px-3 text-[var(--color-text-muted)]">
                 <Search className="h-4 w-4" />
                 <span className="sr-only">Որոնել ապրանք</span>
                 <input name="q" type="search" placeholder="Որոնել ապրանք, բրենդ կամ կատեգորիա" className="w-full bg-transparent text-sm font-medium text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none" />
@@ -104,36 +104,36 @@ export default async function HomePage() {
             <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
               <span className="text-[var(--color-text-muted)]">Հաճախ փնտրում են</span>
               {popularSearches.map((search) => (
-                <Link key={search} href={`/search?q=${encodeURIComponent(search)}`} className="rounded border border-[var(--color-border-muted)] bg-white px-3 py-1.5 font-medium text-[var(--color-text-secondary)] transition hover:border-[var(--color-border)] hover:text-[var(--color-text-primary)]">
+                <Link key={search} href={`/search?q=${encodeURIComponent(search)}`} className="rounded bg-[var(--color-page-bg)] px-3 py-1.5 font-medium text-[var(--color-text-secondary)] transition hover:bg-slate-100 hover:text-[var(--color-text-primary)]">
                   {search}
                 </Link>
               ))}
             </div>
           </div>
 
-          <aside className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-            <div className="flex items-center justify-between border-b border-[var(--color-border-muted)] pb-3">
+          <aside className="rounded-lg bg-[var(--color-surface)] p-3">
+            <div className="flex items-center justify-between pb-2">
               <div>
                 <p className="text-xs text-[var(--color-text-muted)]">Շուկայի ակնարկ</p>
                 <h2 className="text-base font-semibold text-[var(--color-text-primary)]">Արագ սկանավորում</h2>
               </div>
-              <Link href="/shop" className="rounded border border-[var(--color-border)] px-3 py-1.5 text-xs font-semibold text-[var(--color-text-secondary)] hover:bg-[var(--color-page-bg)]">
+              <Link href="/shop" className="rounded bg-[var(--color-page-bg)] px-3 py-1.5 text-xs font-semibold text-[var(--color-text-secondary)] hover:bg-slate-100">
                 Խանութ
               </Link>
             </div>
             <div className="mt-3 grid grid-cols-3 gap-2 lg:grid-cols-1">
               {heroStats.map((stat) => (
-                <div key={stat.label} className="rounded-md border border-[var(--color-border-muted)] bg-[var(--color-page-bg)] p-3">
+                <div key={stat.label} className="rounded-md bg-[var(--color-page-bg)] p-3">
                   <p className="text-lg font-bold leading-none text-[var(--color-price-text)]">{stat.value}</p>
                   <p className="mt-1 text-xs leading-4 text-[var(--color-text-secondary)]">{stat.label}</p>
                 </div>
               ))}
             </div>
-            <div className="mt-4 rounded-md border border-[var(--color-border-muted)] bg-white p-3">
+            <div className="mt-4 rounded-md bg-[var(--color-page-bg)] p-3">
               <p className="text-xs font-semibold text-[var(--color-text-secondary)]">Հանրաճանաչ բաժիններ</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {(heroCategoryLinks.length ? heroCategoryLinks : [{ id: "all", name: "Բոլոր կատեգորիաները", slug: "", image_url: null }]).map((category) => (
-                  <Link key={category.id} href={(category.slug ? `/categories/${category.slug}` : "/categories") as Route} className="rounded border border-[var(--color-border-muted)] px-2.5 py-1 text-xs text-[var(--color-text-secondary)] hover:border-[var(--color-brand-red)] hover:text-[var(--color-brand-red)]">
+                  <Link key={category.id} href={(category.slug ? `/categories/${category.slug}` : "/categories") as Route} className="rounded bg-white px-2.5 py-1 text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-brand-red)]">
                     {category.name}
                   </Link>
                 ))}
@@ -148,9 +148,9 @@ export default async function HomePage() {
           {valueCards.map((card) => {
             const Icon = card.icon;
             return (
-              <article key={card.title} className="rounded-lg border border-[var(--color-border)] bg-white p-4">
+              <article key={card.title} className="rounded-lg bg-white p-3">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--color-page-bg)] text-[var(--color-brand-red)] ring-1 ring-[var(--color-border-muted)]">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--color-page-bg)] text-[var(--color-brand-red)]">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -165,14 +165,14 @@ export default async function HomePage() {
       </section>
 
       <section className="px-3 pb-5 sm:px-5 lg:px-6">
-        <div className="mx-auto max-w-[1200px] rounded-lg border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <div className="mx-auto max-w-[1200px] rounded-lg bg-white p-3 sm:p-4">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="text-xs font-semibold text-[var(--color-brand-red)]">Կատեգորիաներ</p>
               <h2 className="mt-1 text-xl font-semibold tracking-tight text-[var(--color-text-primary)]">Սկսեք ճիշտ բաժնից</h2>
             </div>
             <div className="flex gap-2">
-              <Link href="/categories" className="inline-flex min-h-9 items-center gap-2 rounded-md border border-[var(--color-border)] px-3 text-sm font-semibold text-[var(--color-text-secondary)] transition hover:bg-[var(--color-page-bg)]">
+              <Link href="/categories" className="inline-flex min-h-9 items-center gap-2 rounded-md bg-[var(--color-page-bg)] px-3 text-sm font-semibold text-[var(--color-text-secondary)] transition hover:bg-slate-100">
                 Բոլորը
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -190,7 +190,7 @@ export default async function HomePage() {
               ))}
             </div>
           ) : (
-            <p className="mt-4 rounded-md border border-dashed border-[var(--color-border)] bg-[var(--color-page-bg)] p-4 text-sm font-medium text-[var(--color-text-muted)]">Ակտիվ կատեգորիաներ դեռ չկան։</p>
+            <p className="mt-4 rounded-md bg-[var(--color-page-bg)] p-4 text-sm font-medium text-[var(--color-text-muted)]">Ակտիվ կատեգորիաներ դեռ չկան։</p>
           )}
         </div>
       </section>
@@ -200,7 +200,7 @@ export default async function HomePage() {
       </Suspense>
 
       <section className="px-3 pb-8 sm:px-5 lg:px-6">
-        <div className="mx-auto max-w-[1200px] rounded-lg border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <div className="mx-auto max-w-[1200px] rounded-lg bg-white p-3 sm:p-4">
           <div className="mb-4 flex items-end justify-between gap-3">
             <div>
               <p className="text-xs font-semibold text-[var(--color-brand-red)]">Ինչպես է աշխատում</p>
@@ -211,7 +211,7 @@ export default async function HomePage() {
             {steps.map((step, index) => {
               const Icon = step.icon;
               return (
-                <div key={step.title} className="rounded-md border border-[var(--color-border-muted)] bg-[var(--color-page-bg)] p-4">
+                <div key={step.title} className="rounded-md bg-[var(--color-page-bg)] p-4">
                   <div className="flex items-center justify-between">
                     <Icon className="h-5 w-5 text-[var(--color-text-secondary)]" />
                     <span className="text-xs font-semibold text-[var(--color-text-muted)]">0{index + 1}</span>
