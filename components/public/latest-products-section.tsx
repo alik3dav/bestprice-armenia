@@ -61,13 +61,13 @@ export async function LatestProductsSection() {
 
     return (
       <section id="latest-products" className="w-full px-3 pb-5 sm:px-5 lg:px-6">
-        <div className="mx-auto max-w-[1200px] rounded-lg border border-[var(--color-border)] bg-white p-4 sm:p-5">
+        <div className="mx-auto max-w-[1200px] rounded-lg bg-white p-3 sm:p-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-semibold text-[var(--color-brand-red)]">Նոր տեսականի</p>
               <h2 className="mt-1 text-xl font-semibold tracking-tight text-[var(--color-text-primary)]">Վերջին ավելացված ապրանքներ</h2>
             </div>
-            <Link href="/shop" className="inline-flex items-center rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-text-secondary)] transition hover:bg-[var(--color-page-bg)]">
+            <Link href="/shop" className="inline-flex items-center rounded-md bg-[var(--color-page-bg)] px-3 py-2 text-sm font-semibold text-[var(--color-text-secondary)] transition hover:bg-slate-100">
               Տեսնել բոլորը
             </Link>
           </div>
@@ -101,12 +101,12 @@ export async function LatestProductsSection() {
 export function LatestProductsSkeleton() {
   return (
     <section className="w-full px-3 pb-5 sm:px-5 lg:px-6" aria-busy="true" aria-live="polite">
-      <div className="mx-auto max-w-[1200px] rounded-lg border border-[var(--color-border)] bg-white p-4 sm:p-5">
+      <div className="mx-auto max-w-[1200px] rounded-lg bg-white p-3 sm:p-4">
         <div className="h-7 w-56 animate-pulse rounded bg-slate-200" />
         <div className="mt-4 overflow-x-auto pb-2">
           <div className="flex min-w-max gap-3">
             {Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className="w-[200px] shrink-0 rounded-md border border-[var(--color-border-muted)] p-2 sm:w-[220px]">
+              <div key={index} className="w-[200px] shrink-0 rounded-md bg-[var(--color-page-bg)] p-2 sm:w-[220px]">
                 <div className="aspect-square animate-pulse rounded bg-slate-200" />
                 <div className="mt-3 h-4 w-5/6 animate-pulse rounded bg-slate-200" />
                 <div className="mt-2 h-3 w-full animate-pulse rounded bg-slate-100" />
@@ -123,9 +123,9 @@ export function LatestProductsSkeleton() {
 function EmptyState() {
   return (
     <section className="w-full px-3 pb-5 sm:px-5 lg:px-6">
-      <div className="mx-auto max-w-[1200px] rounded-lg border border-[var(--color-border)] bg-white p-4 sm:p-5">
+      <div className="mx-auto max-w-[1200px] rounded-lg bg-white p-3 sm:p-4">
         <h2 className="text-xl font-semibold tracking-tight text-[var(--color-text-primary)]">Վերջին ավելացված ապրանքներ</h2>
-        <p className="mt-4 rounded-md border border-dashed border-[var(--color-border)] bg-[var(--color-page-bg)] p-4 text-sm text-[var(--color-text-muted)]">Ապրանքներ դեռ հասանելի չեն։</p>
+        <p className="mt-4 rounded-md bg-[var(--color-page-bg)] p-4 text-sm text-[var(--color-text-muted)]">Ապրանքներ դեռ հասանելի չեն։</p>
       </div>
     </section>
   );
@@ -134,9 +134,9 @@ function EmptyState() {
 function ErrorState() {
   return (
     <section className="w-full px-3 pb-5 sm:px-5 lg:px-6">
-      <div className="mx-auto max-w-[1200px] rounded-lg border border-[var(--color-border)] bg-white p-4 sm:p-5">
+      <div className="mx-auto max-w-[1200px] rounded-lg bg-white p-3 sm:p-4">
         <h2 className="text-xl font-semibold tracking-tight text-[var(--color-text-primary)]">Վերջին ավելացված ապրանքներ</h2>
-        <p className="mt-4 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">Չհաջողվեց բեռնել վերջին ապրանքները։</p>
+        <p className="mt-4 rounded-md bg-red-50 p-4 text-sm text-red-700">Չհաջողվեց բեռնել վերջին ապրանքները։</p>
       </div>
     </section>
   );
