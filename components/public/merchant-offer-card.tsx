@@ -67,9 +67,9 @@ export function MerchantOfferCard({
           className="absolute inset-x-0 top-0 h-1 bg-[var(--color-brand-red)]"
         />
       ) : null}
-      <div className="grid gap-3 md:grid-cols-[48px_minmax(0,1fr)_minmax(130px,170px)] md:items-center lg:grid-cols-[48px_minmax(0,1fr)_minmax(130px,160px)_132px]">
+      <div className="grid gap-3 md:grid-cols-[112px_minmax(0,1fr)_minmax(130px,170px)] md:items-center lg:grid-cols-[120px_minmax(0,1fr)_minmax(130px,160px)_132px]">
         <div className="flex items-center gap-3 md:block">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-slate-50 p-2">
+          <div className="flex h-12 w-24 shrink-0 items-center justify-center rounded-md bg-slate-50 px-3 py-2 md:w-28">
             {merchantLogoUrl ? (
               <img
                 src={merchantLogoUrl}
