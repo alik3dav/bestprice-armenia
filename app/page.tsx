@@ -15,6 +15,8 @@ export const metadata: Metadata = {
 
 const popularSearches = ["iPhone", "Laptop", "TV", "Սառնարան"];
 
+const quickCategoryFallbacks = ["Սմարթֆոններ", "Համակարգիչներ", "Հեռուստացույցներ", "Կենցաղային տեխնիկա", "Աուդիո", "Խաղային"];
+
 const heroStats = [
   { value: "100+", label: "կատեգորիա" },
   { value: "24/7", label: "գների դիտարկում" },
@@ -73,6 +75,7 @@ export default async function HomePage() {
 
   const featuredCategories = categories.slice(0, 10);
   const heroCategoryLinks = featuredCategories.slice(0, 5);
+  const quickCategoryLinks = featuredCategories.slice(0, 6);
 
   return (
     <main className="min-h-screen bg-[var(--color-page-bg)] text-[var(--color-text-primary)]">
@@ -141,6 +144,21 @@ export default async function HomePage() {
             </div>
           </aside>
         </div>
+      </section>
+
+
+      <section className="border-y border-[var(--color-border-muted)] bg-[var(--color-surface)] px-3 py-3 sm:px-5 lg:px-6">
+        <nav aria-label="Արագ կատեգորիաներ" className="mx-auto flex max-w-[1200px] gap-2 overflow-x-auto">
+          {(quickCategoryLinks.length ? quickCategoryLinks : quickCategoryFallbacks.map((name) => ({ id: name, name, slug: "", image_url: null }))).map((category) => (
+            <Link
+              key={category.id}
+              href={(category.slug ? `/categories/${category.slug}` : "/categories") as Route}
+              className="whitespace-nowrap rounded-md bg-[var(--color-page-bg)] px-3 py-2 text-sm font-semibold text-[var(--color-text-secondary)] transition hover:bg-slate-100 hover:text-[var(--color-brand-red)]"
+            >
+              {category.name}
+            </Link>
+          ))}
+        </nav>
       </section>
 
       <section className="px-3 py-5 sm:px-5 lg:px-6">
@@ -222,6 +240,21 @@ export default async function HomePage() {
               );
             })}
           </div>
+        </div>
+      </section>
+
+
+      <section className="px-3 pb-8 sm:px-5 lg:px-6">
+        <div className="mx-auto grid max-w-[1200px] gap-3 rounded-lg bg-[var(--color-surface)] p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-4">
+          <div>
+            <p className="text-xs font-semibold text-[var(--color-brand-red)]">Վաճառողների համար</p>
+            <h2 className="mt-1 text-xl font-semibold text-[var(--color-text-primary)]">Ավելացրեք առաջարկները և հայտնվեք համեմատության մեջ</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--color-text-secondary)]">BestPrice Armenia-ի կառուցվածքը պատրաստ է խանութների, ապրանքների և գների պարզ կառավարման համար՝ առանց գնորդների սկանավորումը ծանրացնելու։</p>
+          </div>
+          <Link href="/merchant/login" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-[var(--color-brand-red)] px-4 text-sm font-semibold text-white transition hover:bg-[var(--color-brand-red-hover)]">
+            Մուտք վաճառողի համար
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
 
