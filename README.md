@@ -26,5 +26,8 @@
 - Add audit metadata and optional soft-delete columns.
 - Build public SEO product pages using active products + grouped specifications + lowest-price sorted offers.
 
+## Codex documentation workflow
+Before making repository updates, Codex agents must read `AGENTS.md`, `CODEX.md`, `DESIGN.md`, and the task-specific docs in `docs/`. UI work must also follow `docs/brand-ui-guidelines.md`; structure/component work must follow `docs/architecture-guidelines.md`; Supabase/database work must follow `docs/supabase-guidelines.md`.
+
 ## Environment
 Copy `.env.example` to `.env.local` and set Supabase values.
