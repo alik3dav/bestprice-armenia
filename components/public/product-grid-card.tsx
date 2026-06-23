@@ -17,9 +17,9 @@ export function ProductGridCard({ product, lowestPriceAMD, activeOfferCount = 0,
   const offerText = activeOfferCount <= 0 ? "Առաջարկներ չկան" : activeOfferCount === 1 ? "1 խանութում" : `${activeOfferCount} խանութներում`;
 
   return (
-    <Link href={`/products/${product.slug}`} className={`group block transition ${widthClassName ?? ""}`.trim()}>
-      <article className="flex h-full flex-col overflow-hidden rounded-lg bg-white transition hover:bg-slate-50">
-        <div className="aspect-square bg-slate-50 p-4">
+    <Link href={`/products/${product.slug}`} className={`group block h-full transition ${widthClassName ?? ""}`.trim()}>
+      <article className="flex h-full min-h-[306px] flex-col overflow-hidden rounded-md border border-[var(--color-border-muted)] bg-[var(--color-surface)] transition hover:border-[var(--color-border)] hover:bg-slate-50">
+        <div className="aspect-square w-full shrink-0 bg-[var(--color-page-bg)] p-3">
           {image ? (
             <img src={String(image)} alt={product.title} className="h-full w-full object-contain object-center mix-blend-multiply transition duration-300 group-hover:scale-[1.03]" />
           ) : (
@@ -27,11 +27,15 @@ export function ProductGridCard({ product, lowestPriceAMD, activeOfferCount = 0,
           )}
         </div>
         <div className="flex flex-1 flex-col p-3">
-          <h3 className="line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-slate-950">{product.title}</h3>
-          <div className="mt-auto pt-3">
-            {lowestPriceAMD !== null && lowestPriceAMD !== undefined ? <p className="text-xl font-semibold leading-6 tracking-tight text-slate-950"><PriceText amountAMD={lowestPriceAMD} /></p> : <p className="text-xl font-semibold leading-6 text-slate-300">—</p>}
+          <h3 className="line-clamp-2 min-h-10 text-sm font-medium leading-5 text-[var(--color-text-primary)]">{product.title}</h3>
+          <div className="mt-2 flex items-center gap-1 text-xs leading-4 text-[var(--color-text-muted)]" aria-label="Գնահատական դեռ չկա">
+            <span className="text-[var(--color-rating-orange)]" aria-hidden="true">★</span>
+            <span>Գնահատական չկա</span>
           </div>
-          <p className="mt-1 text-xs font-medium leading-4 text-slate-500">{offerText}</p>
+          <div className="mt-auto pt-3">
+            {lowestPriceAMD !== null && lowestPriceAMD !== undefined ? <p className="text-lg font-bold leading-6 tracking-tight text-[var(--color-price-text)]"><PriceText amountAMD={lowestPriceAMD} /></p> : <p className="text-lg font-bold leading-6 text-[var(--color-text-muted)]">—</p>}
+          </div>
+          <p className="mt-1 text-xs font-medium leading-4 text-[var(--color-text-secondary)]">{offerText}</p>
         </div>
       </article>
     </Link>
