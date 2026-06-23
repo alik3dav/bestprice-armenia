@@ -1,33 +1,47 @@
-# BestPrice Armenia MVP Foundation
+# BestPrice Armenia
+
+BestPrice Armenia is an Armenian-first price-comparison and product-discovery marketplace built with Next.js App Router, TypeScript, Tailwind CSS, and Supabase.
 
 ## Stack
-- Next.js App Router + TypeScript
-- Supabase (auth, PostgreSQL, RLS)
-- Tailwind CSS + reusable admin UI shells
-- shadcn/ui-ready component structure (`components/ui` + compact dashboard patterns)
 
-## Implemented MVP Foundation
+- Next.js App Router + TypeScript
+- Supabase Auth, PostgreSQL, Storage, and RLS
+- Tailwind CSS with reusable marketplace/admin components
+- shadcn/ui-ready component structure where applicable
+
+## Governance-first development
+
+Before making repository changes, start with `PROJECT-STANDARDS.md`. It defines the document hierarchy, rule precedence, enforcement workflow, and quality bar. AI agents must also read `AGENTS.md`, `CODEX-AGENT.md`, affected domain standards, and `QA-CHECKLIST.md`.
+
+Key standards include:
+
+- `DESIGN-SYSTEM.md`, `UX-STANDARDS.md`, `COMPONENT-STANDARDS.md`
+- `ARCHITECTURE.md`, `API-STANDARDS.md`, `STATE-MANAGEMENT.md`, `ERROR-HANDLING.md`
+- `PERFORMANCE.md`, `SEO.md`, `ACCESSIBILITY.md`, `SECURITY.md`
+- `TESTING-STANDARDS.md`, `DOCUMENTATION-STANDARDS.md`, `CONTENT-STANDARDS.md`
+- `PRODUCT-STANDARDS.md`, `CONVERSION-STANDARDS.md`
+
+## Implemented MVP foundation
+
 - Auth login screen and Supabase password sign-in.
 - Admin-only route protection with server-side role checks.
-- Dense desktop-oriented admin layout with sidebar + topbar.
-- CRUD-ready admin modules: dashboard, products, categories, merchants, users, offers, specification templates.
-- Database-first schema in `supabase/migrations/0001_mvp_schema.sql` covering:
-  - profiles, roles, categories, brands, products, merchants, product_offers
-  - specification_groups, specification_fields, product_specification_values
-- RLS policies for:
-  - full admin access
-  - merchant ownership over own offers
-  - public active-data read model for future frontend
+- Dense desktop-oriented admin layout with sidebar and topbar.
+- CRUD-ready admin modules for dashboard, products, categories, merchants, users, offers, and specification templates.
+- Database-first schema in `supabase/migrations/0001_mvp_schema.sql`.
+- RLS policies for admin access, merchant ownership, and public active-data reads.
 
-## Next steps
-- Wire each admin section to Supabase queries/actions.
-- Add create/edit forms (dialog or route-level) and destructive-action confirmation dialogs.
-- Add server actions, pagination, sort, and filter query params.
-- Add audit metadata and optional soft-delete columns.
-- Build public SEO product pages using active products + grouped specifications + lowest-price sorted offers.
+## Development
 
-## Codex documentation workflow
-Before making repository updates, Codex agents must read `AGENTS.md`, `CODEX.md`, `DESIGN.md`, and the task-specific docs in `docs/`. UI work must also follow `docs/brand-ui-guidelines.md`; structure/component work must follow `docs/architecture-guidelines.md`; Supabase/database work must follow `docs/supabase-guidelines.md`.
-
-## Environment
 Copy `.env.example` to `.env.local` and set Supabase values.
+
+Common commands:
+
+```bash
+npm run typecheck
+npm run build
+npm run dev
+```
+
+## Quality gate
+
+No task is complete until applicable standards are checked, relevant automated checks run, limitations reported, and notable governance/product changes documented in `CHANGELOG.md`.
