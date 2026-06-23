@@ -73,7 +73,7 @@ export async function LatestProductsSection() {
           </div>
 
           <div className="mt-4 overflow-x-auto pb-2">
-            <div className="flex min-w-max gap-3">
+            <div className="flex min-w-max items-stretch gap-3">
               {products.map((product) => {
                 const lowest = lowestOfferByProduct.get(product.id);
                 const offerCount = offerCountByProduct.get(product.id) ?? 0;
@@ -104,9 +104,9 @@ export function LatestProductsSkeleton() {
       <div className="mx-auto max-w-[1200px] rounded-lg bg-white p-3 sm:p-4">
         <div className="h-7 w-56 animate-pulse rounded bg-slate-200" />
         <div className="mt-4 overflow-x-auto pb-2">
-          <div className="flex min-w-max gap-3">
+          <div className="flex min-w-max items-stretch gap-3">
             {Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className="w-[200px] shrink-0 rounded-md bg-[var(--color-page-bg)] p-2 sm:w-[220px]">
+              <div key={index} className="min-h-[306px] w-[200px] shrink-0 rounded-md bg-[var(--color-page-bg)] p-2 sm:w-[220px]">
                 <div className="aspect-square animate-pulse rounded bg-slate-200" />
                 <div className="mt-3 h-4 w-5/6 animate-pulse rounded bg-slate-200" />
                 <div className="mt-2 h-3 w-full animate-pulse rounded bg-slate-100" />

@@ -28,7 +28,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 
 export default async function CategoryPage({ params, searchParams }) {
   const [{ slug }, queryParams] = await Promise.all([params, searchParams]);
-  if (!hasSupabaseEnv()) return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={null} /><section className="mx-auto w-full max-w-7xl p-6">Supabase not configured.</section>      <PublicFooter />
+  if (!hasSupabaseEnv()) return <main className="min-h-screen bg-[var(--color-page-bg)] text-[var(--color-text-primary)]"><PublicHeader userEmail={null} /><section className="mx-auto w-full max-w-7xl p-6">Supabase not configured.</section>      <PublicFooter />
     </main>;
   const supabase = await createClient();
   const authResult = await supabase.auth.getUser();
@@ -156,10 +156,10 @@ export default async function CategoryPage({ params, searchParams }) {
 
   const hasAnyFilters = merchants.length > 0 || stock.length > 0 || selectedSpecKeys.length > 0 || min !== null || max !== null;
 
-  return <main className="min-h-screen bg-white text-slate-900"><PublicHeader userEmail={userEmail} />
-    <section className="w-full px-4 py-6 sm:px-6 lg:px-8"><div className="mx-auto w-full max-w-[1600px]"><CategoryBreadcrumbs items={breadcrumbItems} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} /><div className="mb-5"><h1 className="text-2xl font-semibold">{category.name}</h1></div>
+  return <main className="min-h-screen bg-[var(--color-page-bg)] text-[var(--color-text-primary)]"><PublicHeader userEmail={userEmail} />
+    <section className="w-full px-3 py-5 sm:px-5 lg:px-6"><div className="mx-auto w-full max-w-[1200px]"><CategoryBreadcrumbs items={breadcrumbItems} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} /><div className="mb-5 rounded-lg bg-[var(--color-surface)] p-4 sm:p-5"><p className="text-xs font-semibold text-[var(--color-brand-red)]">Կատեգորիա</p><h1 className="mt-1 text-2xl font-semibold leading-tight text-[var(--color-text-primary)]">{category.name}</h1><p className="mt-2 text-sm text-[var(--color-text-secondary)]">Համեմատեք գները, առաջարկները և հասանելիությունը վստահելի խանութներից։</p></div>
       {hasChildren ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-3 rounded-lg bg-[var(--color-surface)] p-3 sm:grid-cols-3 sm:p-4 lg:grid-cols-4 xl:grid-cols-5">
           {(childCategories ?? []).map((child) => (
             <CategoryCard
               key={child.id}
@@ -170,9 +170,9 @@ export default async function CategoryPage({ params, searchParams }) {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"><aside className="lg:pr-6"><div className="sticky top-20"><ShopFilters params={queryParams} merchantIds={Array.from(new Set(offers.map((o) => o.merchant_id)))} specFilters={specFilters} /></div></aside>
-        <div>{productsError ? <ErrorState>Failed to load products.</ErrorState> : null}
-        {products.length === 0 ? <EmptyState className="p-8">No products in this category yet.</EmptyState> : sorted.length === 0 && hasAnyFilters ? <EmptyState className="p-8">Products exist, but no results match the selected filters.</EmptyState> : sorted.length === 0 ? <EmptyState className="p-8">No products found for selected filters.</EmptyState> : <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{sorted.map((p) => { const po = offersByProduct.get(p.id) ?? []; const lowest = po.reduce((m, o) => (!m || o.price < m.price ? o : m), null); return <ProductGridCard key={p.id} product={p} lowestPriceAMD={lowest ? Number(lowest.price) : null} activeOfferCount={po.length} />; })}</div>}</div></div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[240px_minmax(0,1fr)]"><aside className="lg:pr-0"><div className="sticky top-20"><ShopFilters params={queryParams} merchantIds={Array.from(new Set(offers.map((o) => o.merchant_id)))} specFilters={specFilters} /></div></aside>
+        <div className="min-w-0 rounded-lg bg-[var(--color-surface)] p-3 sm:p-4"><div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm font-semibold text-[var(--color-text-primary)]">{sorted.length} ապրանք</p><p className="text-xs text-[var(--color-text-muted)]">Դասավորումը՝ {sort === "lowest" ? "ցածր գին" : sort === "highest" ? "բարձր գին" : "նորերը"}</p></div>{productsError ? <ErrorState>Failed to load products.</ErrorState> : null}
+        {products.length === 0 ? <EmptyState className="p-8">No products in this category yet.</EmptyState> : sorted.length === 0 && hasAnyFilters ? <EmptyState className="p-8">Products exist, but no results match the selected filters.</EmptyState> : sorted.length === 0 ? <EmptyState className="p-8">No products found for selected filters.</EmptyState> : <div className="grid grid-cols-2 items-stretch gap-3 md:grid-cols-3 xl:grid-cols-5">{sorted.map((p) => { const po = offersByProduct.get(p.id) ?? []; const lowest = po.reduce((m, o) => (!m || o.price < m.price ? o : m), null); return <ProductGridCard key={p.id} product={p} lowestPriceAMD={lowest ? Number(lowest.price) : null} activeOfferCount={po.length} />; })}</div>}</div></div>
       )}
     </div></section>      <PublicFooter />
     </main>;
