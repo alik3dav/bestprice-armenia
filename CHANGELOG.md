@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-07-23
+
+### Design and architecture
+- Redesigned the public marketplace header as a responsive two-row, search-first navigation pattern.
+- Split the header into focused logo, search, action, navigation, and link-data components while keeping client-side state in a small coordinator.
+
 ## 2026-06-23
 
 ### Governance
