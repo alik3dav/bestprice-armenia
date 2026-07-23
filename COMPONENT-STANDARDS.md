@@ -8,4 +8,6 @@ User-facing async components must define loading, error, empty, disabled, and su
 
 New reusable components need clear prop types. Complex logic deserves concise comments; obvious markup does not. New reusable variants must be documented in this file or the related design/UX standard.
 
+`ProductGridCard` is the shared public product-card pattern. It uses a stable square image area, a two-line title, rating state, best-price and store-count metadata, and a full-width offer CTA; category and search grids must reuse it rather than duplicating product-card markup.
+
 `components/public/header/` owns focused pieces of the public header: the logo, search form, action group, navigation, and link data. `PublicHeader` is the small client-side coordinator for search, authentication, and account-menu state; presentational header pieces receive typed props and do not own routing or auth side effects.
