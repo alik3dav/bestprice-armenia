@@ -5,6 +5,7 @@
 ### Design and architecture
 - Redesigned the public marketplace header as a responsive two-row, search-first navigation pattern.
 - Split the header into focused logo, search, action, navigation, and link-data components while keeping client-side state in a small coordinator.
+- Redesigned the shared public product card to improve price, offer-count, and offer-CTA scanning across search, category, and latest-product grids.
 
 ## 2026-06-23
 

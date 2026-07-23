@@ -106,11 +106,12 @@ export function LatestProductsSkeleton() {
         <div className="mt-4 overflow-x-auto pb-2">
           <div className="flex min-w-max items-stretch gap-3">
             {Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className="min-h-[306px] w-[200px] shrink-0 rounded-md bg-[var(--color-page-bg)] p-2 sm:w-[220px]">
+              <div key={index} className="min-h-[360px] w-[200px] shrink-0 rounded-lg bg-[var(--color-page-bg)] p-3 sm:w-[220px]">
                 <div className="aspect-square animate-pulse rounded bg-slate-200" />
                 <div className="mt-3 h-4 w-5/6 animate-pulse rounded bg-slate-200" />
                 <div className="mt-2 h-3 w-full animate-pulse rounded bg-slate-100" />
                 <div className="mt-3 h-6 w-1/2 animate-pulse rounded bg-slate-200" />
+                <div className="mt-3 h-10 animate-pulse rounded-md bg-slate-200" />
               </div>
             ))}
           </div>
