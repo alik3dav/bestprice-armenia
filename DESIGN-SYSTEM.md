@@ -20,6 +20,8 @@ Homepage promotion banners use the existing large radius, clear image alt text, 
 
 Homepage discovery sections use a shared title row with an optional action-blue text link. The popular-category strip uses compact white tiles with a subtle border, shadow, circular neutral image well, and centered label; it is two columns on mobile, four on small screens, and eight on desktop. The daily-offers section uses the standard `ProductGridCard` in the documented responsive product grid.
 
+The homepage community section sits directly above the public footer. It uses the neutral header surface, subtle border, large-radius container, optional right-aligned image, and compact Viber and Telegram subscription buttons; the Viber button uses `#7360f2` (hover `#6550e8`) and the Telegram button uses black (hover slate) for recognizable destination branding. Its popular-search links use compact white bordered chips that remain horizontally scrollable on small screens.
+
 The public header is a two-row pattern: a primary row with the wordmark, rounded search field, utility actions, comparison action, and account action; then a horizontally scrollable category-navigation row. Header action icons must expose an accessible name and use the shared circular icon-button treatment. Keep the primary header search compact at desktop widths and allow it to fill its own row below the wordmark and account action on narrow screens.
 
 The public footer uses the neutral header surface with a bordered top edge, compact Armenian-first link columns, and a merchant CTA card using the existing white-card and action-blue button treatments. Its copyright and marketplace metrics sit in a separate bordered bottom row; stack this row and the footer columns on small screens.

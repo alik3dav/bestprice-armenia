@@ -3,6 +3,7 @@
 ## 2026-07-23
 
 ### Design and architecture
+- Added a reusable homepage community-subscription and popular-search section directly above the public footer, with an empty image-source placeholder for a future campaign asset.
 - Replaced the data-fetching public footer with a responsive PriceMaster AM footer containing marketplace, company, legal, and merchant CTA sections.
 - Replaced the homepage text-led hero with a reusable promotional hero that keeps featured-category links above two responsive campaign links and gray image placeholders.
 - Redesigned the public marketplace header as a responsive two-row, search-first navigation pattern.

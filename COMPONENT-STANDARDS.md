@@ -16,4 +16,6 @@ New reusable components need clear prop types. Complex logic deserves concise co
 
 `HomeSectionHeading` owns the shared homepage section title and optional navigational action. `HomeCategoryStrip` uses the documented compact category-tile variant for up to eight popular category links, while `DailyProductOffersSection` composes the shared `ProductGridCard` into the homepage's five-column offer grid.
 
+`HomeCommunitySection` owns the homepage community-subscription panel and popular-search links immediately above the public footer. Keep its image source as a local editable constant and its popular-search destinations as typed static data.
+
 `PublicFooter` owns the public-footer composition: a brand summary, grouped marketplace/company/legal links, merchant acquisition CTA, and trust metrics. Keep these static navigation links in typed data rather than adding a database request to every public route.

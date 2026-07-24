@@ -5,6 +5,7 @@ import { PublicFooter } from "@/components/public/public-footer";
 import { DailyProductOffersSection, DailyProductOffersSkeleton } from "@/components/public/daily-product-offers-section";
 import { HomeCategoryStrip } from "@/components/public/home-category-strip";
 import { HomePromotionHero } from "@/components/public/home-promotion-hero";
+import { HomeCommunitySection } from "@/components/public/home-community-section";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -48,6 +49,7 @@ export default async function HomePage() {
       <Suspense fallback={<DailyProductOffersSkeleton />}>
         <DailyProductOffersSection />
       </Suspense>
+      <HomeCommunitySection />
 
       <PublicFooter />
     </main>
