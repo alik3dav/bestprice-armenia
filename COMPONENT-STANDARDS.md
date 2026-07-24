@@ -13,3 +13,5 @@ New reusable components need clear prop types. Complex logic deserves concise co
 `components/public/header/` owns focused pieces of the public header: the logo, search form, action group, navigation, and link data. `PublicHeader` is the small client-side coordinator for search, authentication, and account-menu state; presentational header pieces receive typed props and do not own routing or auth side effects.
 
 `HomePromotionHero` owns the homepage promotional-banner composition: a horizontally scrollable set of featured category links and two typed, image-ready promotional links. Keep banner content and destinations as data-driven props rather than duplicating hero markup in the route.
+
+`HomeSectionHeading` owns the shared homepage section title and optional navigational action. `HomeCategoryStrip` uses the documented compact category-tile variant for up to eight popular category links, while `DailyProductOffersSection` composes the shared `ProductGridCard` into the homepage's five-column offer grid.
