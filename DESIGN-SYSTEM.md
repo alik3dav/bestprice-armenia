@@ -16,6 +16,8 @@ Use centered public containers around 1180px-1240px. Product grids default to 5 
 ## Component styling
 Cards use white surfaces, subtle borders, compact padding, and restrained shadows. Buttons, badges, inputs, rows, and tables must use shared variants. Product imagery should use stable aspect ratios and `object-fit: contain` where appropriate.
 
+Homepage promotion banners use the existing large radius, clear image alt text, a restrained neutral dark overlay for text contrast when an image is supplied, and the documented brand CTA treatment. Empty image sources render a neutral gray placeholder surface. Keep the featured-category strip horizontally scrollable on small screens rather than allowing it to wrap or overflow the page.
+
 The public header is a two-row pattern: a primary row with the wordmark, rounded search field, utility actions, comparison action, and account action; then a horizontally scrollable category-navigation row. Header action icons must expose an accessible name and use the shared circular icon-button treatment. Keep the primary header search compact at desktop widths and allow it to fill its own row below the wordmark and account action on narrow screens.
 
 ## Motion and responsiveness
