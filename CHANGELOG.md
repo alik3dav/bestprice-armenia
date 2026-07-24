@@ -3,6 +3,7 @@
 ## 2026-07-23
 
 ### Design and architecture
+- Replaced the homepage text-led hero with a reusable promotional hero that keeps featured-category links above two responsive campaign links and gray image placeholders.
 - Redesigned the public marketplace header as a responsive two-row, search-first navigation pattern.
 - Split the header into focused logo, search, action, navigation, and link-data components while keeping client-side state in a small coordinator.
 - Redesigned the shared public product card to improve price, offer-count, and offer-CTA scanning across search, category, and latest-product grids.
