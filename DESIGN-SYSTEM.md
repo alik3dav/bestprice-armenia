@@ -26,5 +26,7 @@ The public header is a two-row pattern: a primary row with the wordmark, rounded
 
 The public footer uses the neutral header surface with a bordered top edge, compact Armenian-first link columns, and a merchant CTA card using the existing white-card and action-blue button treatments. Its copyright and marketplace metrics sit in a separate bordered bottom row; stack this row and the footer columns on small screens.
 
+Category filter sidebars use the documented cool-neutral filter surface with compact white, subtly bordered filter cards. Each card has a sentence-case title and optional selected-count badge, price inputs with a non-interactive range indicator, native checkbox rows for merchants and availability, and two-column selectable specification options. Use action blue for selected controls and the apply action; retain visible labels and native controls so filters remain keyboard accessible.
+
 ## Motion and responsiveness
 Motion must clarify state, stay under 200ms for common transitions, respect reduced motion, and avoid layout shift. Mobile must behave like a shopping app: prominent search, two-column grids, thumb-friendly CTAs, no horizontal overflow.

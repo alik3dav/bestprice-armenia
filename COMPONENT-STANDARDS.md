@@ -19,3 +19,5 @@ New reusable components need clear prop types. Complex logic deserves concise co
 `HomeCommunitySection` owns the homepage community-subscription panel and popular-search links immediately above the public footer. Keep its image source as a local editable constant and its popular-search destinations as typed static data.
 
 `PublicFooter` owns the public-footer composition: a brand summary, grouped marketplace/company/legal links, merchant acquisition CTA, and trust metrics. Keep these static navigation links in typed data rather than adding a database request to every public route.
+
+`ShopFilters` owns the public category filter sidebar. It accepts URL search parameters and typed merchant/specification filter data, retains filter values in the GET form, and composes the documented filter-card, checkbox-row, and selectable-option treatments rather than duplicating filter markup in category routes.
