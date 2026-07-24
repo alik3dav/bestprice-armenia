@@ -3,6 +3,7 @@
 ## 2026-07-23
 
 ### Design and architecture
+- Redesigned the reusable category filter sidebar with compact filter cards, price-range inputs, selected states, and keyboard-accessible merchant, availability, and specification controls.
 - Added a reusable homepage community-subscription and popular-search section directly above the public footer, with an empty image-source placeholder for a future campaign asset.
 - Replaced the data-fetching public footer with a responsive PriceMaster AM footer containing marketplace, company, legal, and merchant CTA sections.
 - Replaced the homepage text-led hero with a reusable promotional hero that keeps featured-category links above two responsive campaign links and gray image placeholders.
