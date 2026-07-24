@@ -15,3 +15,5 @@ New reusable components need clear prop types. Complex logic deserves concise co
 `HomePromotionHero` owns the homepage promotional-banner composition: a horizontally scrollable set of featured category links and two typed, image-ready promotional links. Keep banner content and destinations as data-driven props rather than duplicating hero markup in the route.
 
 `HomeSectionHeading` owns the shared homepage section title and optional navigational action. `HomeCategoryStrip` uses the documented compact category-tile variant for up to eight popular category links, while `DailyProductOffersSection` composes the shared `ProductGridCard` into the homepage's five-column offer grid.
+
+`PublicFooter` owns the public-footer composition: a brand summary, grouped marketplace/company/legal links, merchant acquisition CTA, and trust metrics. Keep these static navigation links in typed data rather than adding a database request to every public route.
