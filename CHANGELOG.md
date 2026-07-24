@@ -3,6 +3,7 @@
 ## 2026-07-23
 
 ### Design and architecture
+- Replaced the data-fetching public footer with a responsive PriceMaster AM footer containing marketplace, company, legal, and merchant CTA sections.
 - Replaced the homepage text-led hero with a reusable promotional hero that keeps featured-category links above two responsive campaign links and gray image placeholders.
 - Redesigned the public marketplace header as a responsive two-row, search-first navigation pattern.
 - Split the header into focused logo, search, action, navigation, and link-data components while keeping client-side state in a small coordinator.

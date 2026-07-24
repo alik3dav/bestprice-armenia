@@ -1,87 +1,93 @@
 import Link from "next/link";
-import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
-import { FooterLoginButton } from "@/components/public/footer-login-button";
+import { Globe2, Radio, Share2 } from "lucide-react";
+import type { Route } from "next";
 
-const hasSupabaseEnv = () => Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+type InternalFooterLink = {
+  href: Route;
+  label: string;
+};
 
-async function FooterCategoryLinks() {
-  if (!hasSupabaseEnv()) {
-    return <p className="text-sm text-slate-500">Կատեգորիաներ հասանելի չեն։</p>;
+type ExternalFooterLink = {
+  href: `mailto:${string}`;
+  label: string;
+  external: true;
+};
+
+const footerLinkGroups: { title: string; links: (InternalFooterLink | ExternalFooterLink)[] }[] = [
+  {
+    title: "Կատեգորիաներ",
+    links: [
+      { href: "/categories", label: "Տեխնոլոգիա" },
+      { href: "/categories", label: "Տուն և կենցաղ" },
+      { href: "/categories", label: "Նորաձևություն" },
+      { href: "/categories", label: "Առողջություն" }
+    ]
+  },
+  {
+    title: "Ընկերություն",
+    links: [
+      { href: "/", label: "Մեր մասին" },
+      { href: "/merchant/login", label: "Աշխատատեղեր" },
+      { href: "mailto:support@pricemaster.am", label: "Կոնտակտ", external: true },
+      { href: "/search", label: "Օգնության կենտրոն" }
+    ]
+  },
+  {
+    title: "Իրավական",
+    links: [
+      { href: "/", label: "Գաղտնիության քաղաքականություն" },
+      { href: "/", label: "Օգտագործման պայմաններ" },
+      { href: "/", label: "Cookies" }
+    ]
   }
+];
 
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase
-      .from("categories")
-      .select("id,name,slug,parent_id")
-      .eq("status", "active")
-      .order("name")
-      .limit(8);
-
-    const categories = (data ?? []).filter((category: any) => !category.parent_id);
-
-    if (!categories.length) {
-      return <p className="text-sm text-slate-500">Կատեգորիաներ դեռ չկան։</p>;
-    }
-
-    return (
-      <ul className="mt-3 space-y-2">
-        {categories.map((category: any) => (
-          <li key={category.id}>
-            <Link href={`/categories/${category.slug}`} className="text-sm text-slate-600 transition hover:text-slate-900">
-              {category.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    );
-  } catch {
-    return <p className="text-sm text-slate-500">Կատեգորիաները բեռնել չհաջողվեց։</p>;
-  }
-}
-
-function FooterCategoryLinksFallback() {
-  return <p className="mt-3 text-sm text-slate-500">Բեռնվում է...</p>;
-}
+const footerLinkClassName = "text-sm leading-6 text-[var(--color-text-secondary)] transition hover:text-[var(--color-action-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-action-blue)] focus-visible:ring-offset-2";
 
 export function PublicFooter() {
   return (
-    <footer className="mt-10 w-full border-t border-slate-200/80 bg-white">
-      <div className="w-full px-4 py-8 sm:px-6 lg:px-10">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <Link href="/" className="text-lg font-semibold tracking-tight text-slate-900">BestPrice</Link>
-            <p className="mt-3 max-w-xs text-sm leading-6 text-slate-600">Հայկական հարթակ՝ ապրանքներն ու առաջարկները արագ համեմատելու համար։</p>
+    <footer className="mt-10 w-full border-t border-[var(--color-border)] bg-[var(--color-header-surface)]">
+      <div className="mx-auto w-full max-w-[1240px] px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[minmax(0,2.1fr)_repeat(3,minmax(0,1fr))_minmax(220px,1.35fr)] lg:gap-10">
+          <div className="max-w-sm">
+            <Link href="/" className="text-xl font-extrabold tracking-tight text-[var(--color-brand-red)] transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-action-blue)] focus-visible:ring-offset-4">
+              PriceMaster AM
+            </Link>
+            <p className="mt-4 text-sm leading-6 text-[var(--color-text-secondary)]">Հայաստանի վստահելի գների համեմատման հարթակ, որն օգնում է խնայել ժամանակն ու գումարը։</p>
+            <div className="mt-5 flex items-center gap-4 text-[var(--color-text-secondary)]" aria-label="PriceMaster AM հղումներ">
+              <Globe2 className="h-5 w-5" aria-hidden="true" />
+              <Share2 className="h-5 w-5" aria-hidden="true" />
+              <Radio className="h-5 w-5" aria-hidden="true" />
+            </div>
           </div>
 
-          <div>
-            <h3 className="text-sm font-semibold text-slate-900">Նավիգացիա</h3>
-            <ul className="mt-3 space-y-2">
-              <li><Link href="/" className="text-sm text-slate-600 transition hover:text-slate-900">Գլխավոր</Link></li>
-              <li><Link href="/" className="text-sm text-slate-600 transition hover:text-slate-900">Կատեգորիաներ</Link></li>
-              <li><Link href="/#latest-products" className="text-sm text-slate-600 transition hover:text-slate-900">Վերջին ապրանքներ</Link></li>
-              <li><FooterLoginButton /></li>
-            </ul>
-          </div>
+          {footerLinkGroups.map((group) => (
+            <div key={group.title}>
+              <h2 className="text-base font-bold text-[var(--color-text-primary)]">{group.title}</h2>
+              <ul className="mt-4 space-y-2">
+                {group.links.map((link) => (
+                  <li key={link.label}>
+                    {"external" in link ? <a href={link.href} className={footerLinkClassName}>{link.label}</a> : <Link href={link.href} className={footerLinkClassName}>{link.label}</Link>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
 
-          <div>
-            <h3 className="text-sm font-semibold text-slate-900">Կատեգորիաներ</h3>
-            <Suspense fallback={<FooterCategoryLinksFallback />}>
-              <FooterCategoryLinks />
-            </Suspense>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold text-slate-900">Իրավական</h3>
-            <ul className="mt-3 space-y-2">
-              <li><a href="#" className="text-sm text-slate-600 transition hover:text-slate-900">Գաղտնիության քաղաքականություն</a></li>
-              <li><a href="#" className="text-sm text-slate-600 transition hover:text-slate-900">Օգտագործման պայմաններ</a></li>
-            </ul>
-          </div>
+          <aside className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-subtle)]">
+            <h2 className="text-base font-bold text-[var(--color-text-primary)]">PriceMaster For Merchants</h2>
+            <p className="mt-2 text-sm leading-6 text-[var(--color-text-secondary)]">Ավելի շատ գնորդներ</p>
+            <Link href="/merchant/login" className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[var(--color-action-blue)] px-4 text-sm font-bold text-white transition hover:bg-[var(--color-action-blue-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-action-blue)] focus-visible:ring-offset-2">Ավելին իմանալ</Link>
+          </aside>
         </div>
 
-        <div className="mt-8 text-xs text-slate-500">© {new Date().getFullYear()} BestPrice. Բոլոր իրավունքները պաշտպանված են։</div>
+        <div className="mt-8 flex flex-col gap-3 border-t border-[var(--color-border)] pt-4 text-xs leading-5 text-[var(--color-text-secondary)] sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} PriceMaster AM. Բոլոր իրավունքները պաշտպանված են։ Հայկական գների համեմատման հարթակ։</p>
+          <div className="flex items-center gap-6 font-bold text-[var(--color-action-blue)]">
+            <span>3,823 խանութ</span>
+            <span>28M+ ապրանք</span>
+          </div>
+        </div>
       </div>
     </footer>
   );

@@ -22,5 +22,7 @@ Homepage discovery sections use a shared title row with an optional action-blue 
 
 The public header is a two-row pattern: a primary row with the wordmark, rounded search field, utility actions, comparison action, and account action; then a horizontally scrollable category-navigation row. Header action icons must expose an accessible name and use the shared circular icon-button treatment. Keep the primary header search compact at desktop widths and allow it to fill its own row below the wordmark and account action on narrow screens.
 
+The public footer uses the neutral header surface with a bordered top edge, compact Armenian-first link columns, and a merchant CTA card using the existing white-card and action-blue button treatments. Its copyright and marketplace metrics sit in a separate bordered bottom row; stack this row and the footer columns on small screens.
+
 ## Motion and responsiveness
 Motion must clarify state, stay under 200ms for common transitions, respect reduced motion, and avoid layout shift. Mobile must behave like a shopping app: prominent search, two-column grids, thumb-friendly CTAs, no horizontal overflow.
